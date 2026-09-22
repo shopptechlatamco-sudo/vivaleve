@@ -42,6 +42,7 @@
   }
   .field textarea{ min-height:80px; resize:vertical; }
   .auth-error{ background:rgba(242,104,92,0.15); color:#FF9C90; border-radius:8px; padding:10px 12px; font-size:0.83rem; margin-bottom:14px; display:none; }
+  .card .auth-error{ background:var(--danger-soft); color:var(--danger); text-align:left; }
   .link-row{ text-align:center; margin-top:14px; font-size:0.85rem; color:var(--ink-soft); }
 
   /* app shell */
@@ -244,6 +245,14 @@
           <div class="dialog-field"><label>Bio</label><textarea id="prof-bio"></textarea></div>
           <button class="btn btn-primary" onclick="saveProfile()">Salvar</button>
           <p style="font-size:0.8rem;color:var(--card-ink-soft);margin-top:14px">Status da parceria: <strong id="prof-status">—</strong></p>
+        </div>
+
+        <div class="card" style="max-width:480px">
+          <h3 style="margin-bottom:14px">Trocar senha</h3>
+          <div class="auth-error" id="change-password-error"></div>
+          <div class="dialog-field"><label>Nova senha</label><input id="cp-new-password" type="password" autocomplete="new-password" /></div>
+          <div class="dialog-field"><label>Confirmar nova senha</label><input id="cp-confirm-password" type="password" autocomplete="new-password" /></div>
+          <button class="btn btn-primary" onclick="submitChangePassword()">Salvar nova senha</button>
         </div>
       </section>
 
@@ -897,6 +906,26 @@ async function saveProfile(){
   }).eq('id', currentUser.id);
   document.getElementById('header-name').textContent = document.getElementById('prof-name').value.trim();
   showToast('Perfil atualizado.');
+}
+
+// ---------------------------------------------------------
+// TROCAR SENHA
+// ---------------------------------------------------------
+async function submitChangePassword(){
+  const errEl = document.getElementById('change-password-error');
+  errEl.style.display = 'none';
+  const newPassword = document.getElementById('cp-new-password').value;
+  const confirmPassword = document.getElementById('cp-confirm-password').value;
+
+  if(newPassword.length < 6){ errEl.textContent = 'A senha precisa ter pelo menos 6 caracteres.'; errEl.style.display = 'block'; return; }
+  if(newPassword !== confirmPassword){ errEl.textContent = 'As senhas não coincidem.'; errEl.style.display = 'block'; return; }
+
+  const { error } = await db.auth.updateUser({ password: newPassword });
+  if(error){ errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+
+  document.getElementById('cp-new-password').value = '';
+  document.getElementById('cp-confirm-password').value = '';
+  showToast('Senha atualizada com sucesso!');
 }
 </script>
 </body>

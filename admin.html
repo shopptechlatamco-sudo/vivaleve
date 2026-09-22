@@ -35,6 +35,7 @@
   .field label{ display:block; font-size:0.78rem; color:var(--ink-soft); margin-bottom:6px; }
   .field input{ width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:10px; background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; font-size:0.92rem; }
   .auth-error{ background:rgba(242,104,92,0.15); color:#FF9C90; border-radius:8px; padding:10px 12px; font-size:0.83rem; margin-bottom:14px; display:none; text-align:left; }
+  dialog .auth-error{ background:var(--danger-soft); color:var(--danger); }
 
   #app{ display:none; flex-direction:column; flex:1; }
   header.top{ display:flex; align-items:center; justify-content:space-between; padding:18px 24px; border-bottom:1px solid var(--line); }
@@ -116,7 +117,10 @@
   <div id="app">
     <header class="top">
       <span class="brand">VivaLeve Admin</span>
-      <button onclick="handleLogout()">Sair</button>
+      <div>
+        <button onclick="openChangePasswordDialog()">Trocar senha</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
     </header>
 
     <nav class="tabs">
@@ -195,6 +199,19 @@
     </main>
   </div>
 </div>
+
+<dialog id="dialog-change-password">
+  <div class="dialog-inner">
+    <h3>Trocar senha</h3>
+    <div class="auth-error" id="change-password-error"></div>
+    <div class="dialog-field"><label>Nova senha</label><input id="cp-new-password" type="password" autocomplete="new-password" /></div>
+    <div class="dialog-field"><label>Confirmar nova senha</label><input id="cp-confirm-password" type="password" autocomplete="new-password" /></div>
+    <div class="dialog-actions">
+      <button class="btn btn-card-outline" onclick="document.getElementById('dialog-change-password').close()">Cancelar</button>
+      <button class="btn btn-primary" onclick="submitChangePassword()">Salvar</button>
+    </div>
+  </div>
+</dialog>
 
 <dialog id="dialog-revoke-premium">
   <div class="dialog-inner">
@@ -462,6 +479,31 @@ async function loadAudit(){
     ${data.map(a => `<tr><td>${new Date(a.created_at).toLocaleString('pt-BR')}</td><td>${nameMap[a.actor_id]||'—'}</td>
     <td><span class="pill ${a.actor_role}">${roleLabel(a.actor_role)}</span></td><td>${a.action}</td></tr>`).join('')}
   </tbody></table>`;
+}
+
+// ---------------------------------------------------------
+// TROCAR SENHA
+// ---------------------------------------------------------
+function openChangePasswordDialog(){
+  document.getElementById('cp-new-password').value = '';
+  document.getElementById('cp-confirm-password').value = '';
+  document.getElementById('change-password-error').style.display = 'none';
+  document.getElementById('dialog-change-password').showModal();
+}
+async function submitChangePassword(){
+  const errEl = document.getElementById('change-password-error');
+  errEl.style.display = 'none';
+  const newPassword = document.getElementById('cp-new-password').value;
+  const confirmPassword = document.getElementById('cp-confirm-password').value;
+
+  if(newPassword.length < 6){ errEl.textContent = 'A senha precisa ter pelo menos 6 caracteres.'; errEl.style.display = 'block'; return; }
+  if(newPassword !== confirmPassword){ errEl.textContent = 'As senhas não coincidem.'; errEl.style.display = 'block'; return; }
+
+  const { error } = await db.auth.updateUser({ password: newPassword });
+  if(error){ errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+
+  document.getElementById('dialog-change-password').close();
+  showToast('Senha atualizada com sucesso!');
 }
 </script>
 </body>
