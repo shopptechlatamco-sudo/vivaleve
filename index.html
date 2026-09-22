@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>VivaLeve</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  :root{
+    --ink:#1C2B22;
+    --paper:#F1EEE2;
+    --paper-2:#E8E3D3;
+    --moss:#2F5233;
+    --moss-light:#3E6B44;
+    --citrus:#E8A33D;
+    --clay:#C1573B;
+    --line:#D3CDB8;
+    --white:#FFFFFF;
+    --danger:#B8433A;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-top:env(safe-area-inset-top,0);
+    padding-bottom:env(safe-area-inset-bottom,0);
+  }
+  h1,h2,h3,.serif{ font-family:'Fraunces',serif; }
+  .shell{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    background:var(--paper);
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+
+  /* ---------- Auth screen ---------- */
+  #auth-screen{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:32px 28px;
+  }
+  #auth-screen .wordmark{
+    font-size:2.6rem;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--moss);
+    margin:0 0 4px;
+  }
+  #auth-screen .tagline{
+    margin:0 0 36px;
+    color:#5B6259;
+    font-size:0.95rem;
+  }
+  .field{ margin-bottom:16px; }
+  .field label{
+    display:block;
+    font-size:0.8rem;
+    color:#5B6259;
+    margin-bottom:6px;
+  }
+  .field input, .field select{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--white);
+    font-family:'Inter',sans-serif;
+    font-size:0.95rem;
+    color:var(--ink);
+  }
+  .field input:focus, .field select:focus, button:focus-visible{
+    outline:2px solid var(--moss);
+    outline-offset:1px;
+  }
+  .btn{
+    width:100%;
+    padding:13px 16px;
+    border-radius:10px;
+    border:none;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:0.95rem;
+    cursor:pointer;
+  }
+  .btn-primary{ background:var(--moss); color:var(--white); }
+  .btn-primary:hover{ background:var(--moss-light); }
+  .btn-ghost{ background:transparent; color:var(--moss); text-decoration:underline; padding:10px; }
+  .btn-secondary{ background:var(--paper-2); color:var(--ink); }
+  .auth-switch{
+    margin-top:18px;
+    text-align:center;
+    font-size:0.88rem;
+    color:#5B6259;
+  }
+  .auth-error{
+    background:#F6E4E1;
+    color:var(--danger);
+    border-radius:8px;
+    padding:10px 12px;
+    font-size:0.85rem;
+    margin-bottom:14px;
+    display:none;
+  }
+
+  /* ---------- App shell ---------- */
+  #app{ display:none; flex-direction:column; flex:1; }
+  header.app-header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    padding:22px 24px 14px;
+  }
+  header.app-header .greeting{ font-size:1.5rem; font-weight:600; margin:0; }
+  header.app-header .greeting span{ color:var(--moss); }
+  header.app-header button{
+    background:none; border:none; color:#8A8A7B; font-size:0.85rem; cursor:pointer; font-family:'Inter',sans-serif;
+  }
+
+  main{ flex:1; padding:0 24px 100px; overflow-y:auto; }
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; animation:fade .18s ease; }
+  @keyframes fade{ from{opacity:0} to{opacity:1} }
+
+  .stat-row{ display:flex; gap:12px; margin-bottom:22px; }
+  .stat{
+    flex:1;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 14px 12px;
+    background:var(--white);
+  }
+  .stat .value{ font-family:'Fraunces',serif; font-size:1.6rem; font-weight:600; line-height:1; }
+  .stat .label{ font-size:0.75rem; color:#6B7268; margin-top:4px; }
+
+  .section-title{
+    font-size:1.05rem;
+    font-weight:600;
+    margin:26px 0 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .section-title .link-btn{
+    font-size:0.8rem; font-weight:500; color:var(--moss); background:none; border:none; cursor:pointer;
+  }
+
+  .list-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .list-item:last-child{ border-bottom:none; }
+  .list-item .meta{ display:flex; flex-direction:column; }
+  .list-item .meta .name{ font-weight:600; font-size:0.92rem; }
+  .list-item .meta .sub{ font-size:0.78rem; color:#6B7268; margin-top:2px; }
+  .pill{
+    font-size:0.72rem;
+    padding:3px 9px;
+    border-radius:20px;
+    background:var(--paper-2);
+    color:#5B6259;
+    white-space:nowrap;
+  }
+  .pill.processing{ background:#F3E6C8; color:#8A6410; }
+  .pill.error{ background:#F6E4E1; color:var(--danger); }
+  .pill.done{ background:#E1EADD; color:var(--moss); }
+
+  .empty-hint{
+    color:#8A8A7B;
+    font-size:0.88rem;
+    padding:18px 0;
+    text-align:center;
+    border:1px dashed var(--line);
+    border-radius:12px;
+  }
+
+  .fab-row{ display:flex; gap:10px; margin-bottom:6px; }
+  .fab-row .btn{ flex:1; }
+
+  input[type=file]{ display:none; }
+
+  .water-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+  .water-chip{
+    padding:9px 14px;
+    border-radius:20px;
+    border:1px solid var(--line);
+    background:var(--white);
+    font-size:0.85rem;
+    cursor:pointer;
+  }
+  .water-chip:hover{ border-color:var(--moss); }
+
+  dialog{
+    border:none; border-radius:16px; padding:0; width:min(92vw,420px);
+  }
+  dialog::backdrop{ background:rgba(28,43,34,0.45); }
+  .dialog-inner{ padding:22px; }
+  .dialog-inner h3{ margin-top:0; }
+  .dialog-actions{ display:flex; gap:10px; margin-top:18px; }
+
+  /* ---------- Bottom nav ---------- */
+  nav.tabbar{
+    position:sticky;
+    bottom:0;
+    display:flex;
+    background:var(--white);
+    border-top:1px solid var(--line);
+    padding:10px 8px calc(10px + env(safe-area-inset-bottom,0));
+  }
+  nav.tabbar button{
+    flex:1;
+    background:none;
+    border:none;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    font-family:'Inter',sans-serif;
+    font-size:0.68rem;
+    color:#9A9A8A;
+    cursor:pointer;
+    padding:4px;
+  }
+  nav.tabbar button.active{ color:var(--moss); font-weight:600; }
+  nav.tabbar button .dot{
+    width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+
+  .chart-wrap{ background:var(--white); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  .chart-wrap svg{ width:100%; height:140px; overflow:visible; }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#161F1A; --paper-2:#1E2A22; --ink:#EDEAE0; --white:#1E2A22; --line:#2C3A31;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#161F1A; --paper-2:#1E2A22; --ink:#EDEAE0; --white:#1E2A22; --line:#2C3A31;
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ============ AUTH ============ -->
+  <section id="auth-screen">
+    <p class="wordmark">VivaLeve</p>
+    <p class="tagline">Nutrição, treino e progresso em um só lugar.</p>
+
+    <div class="auth-error" id="auth-error"></div>
+
+    <div id="login-form">
+      <div class="field">
+        <label for="login-email">E-mail</label>
+        <input id="login-email" type="email" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label for="login-password">Senha</label>
+        <input id="login-password" type="password" autocomplete="current-password" />
+      </div>
+      <button class="btn btn-primary" onclick="handleLogin()">Entrar</button>
+      <p class="auth-switch">Ainda não tem conta? <button class="btn-ghost" style="width:auto;display:inline;padding:0" onclick="toggleAuthMode()">Criar conta</button></p>
+    </div>
+
+    <div id="signup-form" style="display:none">
+      <div class="field">
+        <label for="signup-name">Nome</label>
+        <input id="signup-name" type="text" autocomplete="name" />
+      </div>
+      <div class="field">
+        <label for="signup-email">E-mail</label>
+        <input id="signup-email" type="email" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label for="signup-password">Senha</label>
+        <input id="signup-password" type="password" autocomplete="new-password" />
+      </div>
+      <button class="btn btn-primary" onclick="handleSignup()">Criar conta</button>
+      <p class="auth-switch">Já tem conta? <button class="btn-ghost" style="width:auto;display:inline;padding:0" onclick="toggleAuthMode()">Entrar</button></p>
+    </div>
+  </section>
+
+  <!-- ============ APP ============ -->
+  <div id="app">
+    <header class="app-header">
+      <h1 class="greeting">Olá, <span id="greeting-name">—</span></h1>
+      <button onclick="handleLogout()">Sair</button>
+    </header>
+
+    <main>
+      <!-- DASHBOARD -->
+      <section class="tab-panel active" id="tab-dashboard">
+        <div class="stat-row">
+          <div class="stat"><div class="value" id="stat-calories">0</div><div class="label">kcal hoje</div></div>
+          <div class="stat"><div class="value" id="stat-water">0,0L</div><div class="label">água hoje</div></div>
+          <div class="stat"><div class="value" id="stat-streak">0</div><div class="label">dias seguidos</div></div>
+        </div>
+
+        <div class="section-title">Água de hoje</div>
+        <div class="water-chips">
+          <button class="water-chip" onclick="addWater(0.25)">+ 250 ml</button>
+          <button class="water-chip" onclick="addWater(0.5)">+ 500 ml</button>
+          <button class="water-chip" onclick="addWater(0.7)">+ 700 ml</button>
+        </div>
+
+        <div class="section-title">Últimas refeições
+          <button class="link-btn" onclick="showTab('nutrition')">ver tudo</button>
+        </div>
+        <div id="dashboard-meals-list"><div class="empty-hint">Nenhuma refeição registrada ainda hoje.</div></div>
+      </section>
+
+      <!-- NUTRITION -->
+      <section class="tab-panel" id="tab-nutrition">
+        <div class="fab-row">
+          <button class="btn btn-primary" onclick="document.getElementById('photo-input').click()">📷 Foto (IA)</button>
+          <button class="btn btn-secondary" onclick="openManualMealDialog()">✏️ Manual</button>
+        </div>
+        <input type="file" id="photo-input" accept="image/*" capture="environment" onchange="handlePhotoSelected(event)" />
+
+        <div class="section-title">Refeições de hoje</div>
+        <div id="nutrition-meals-list"><div class="empty-hint">Nenhuma refeição ainda. Manda uma foto do prato!</div></div>
+      </section>
+
+      <!-- WORKOUT -->
+      <section class="tab-panel" id="tab-workout">
+        <div class="fab-row">
+          <button class="btn btn-primary" onclick="openNewWorkoutDialog()">+ Novo treino</button>
+        </div>
+        <div class="section-title">Seus treinos</div>
+        <div id="workout-list"><div class="empty-hint">Nenhum treino cadastrado ainda.</div></div>
+      </section>
+
+      <!-- PROGRESS -->
+      <section class="tab-panel" id="tab-progress">
+        <div class="fab-row">
+          <button class="btn btn-primary" onclick="openWeightDialog()">+ Registrar peso</button>
+        </div>
+        <div class="chart-wrap">
+          <svg id="weight-chart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="section-title">Histórico</div>
+        <div id="progress-list"><div class="empty-hint">Nenhum registro de peso ainda.</div></div>
+
+        <div class="section-title">Escaneamento corporal (IA)</div>
+        <div id="body-scan-result"></div>
+        <div class="fab-row">
+          <button class="btn btn-secondary" onclick="openBodyScanDialog()">📷 Novo escaneamento</button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tabbar">
+      <button class="tab-btn active" data-tab="dashboard" onclick="showTab('dashboard')"><span class="dot">🏠</span>Início</button>
+      <button class="tab-btn" data-tab="nutrition" onclick="showTab('nutrition')"><span class="dot">🍽️</span>Nutrição</button>
+      <button class="tab-btn" data-tab="workout" onclick="showTab('workout')"><span class="dot">🏋️</span>Treino</button>
+      <button class="tab-btn" data-tab="progress" onclick="showTab('progress')"><span class="dot">📈</span>Progresso</button>
+    </nav>
+  </div>
+</div>
+
+<!-- ============ DIALOGS ============ -->
+<dialog id="dialog-manual-meal">
+  <div class="dialog-inner">
+    <h3>Registrar refeição</h3>
+    <div class="field"><label>Nome</label><input id="mm-name" type="text" placeholder="Ex: Frango com arroz" /></div>
+    <div class="field"><label>Tipo</label>
+      <select id="mm-type">
+        <option value="breakfast">Café da manhã</option>
+        <option value="lunch">Almoço</option>
+        <option value="snack">Lanche</option>
+        <option value="dinner">Jantar</option>
+      </select>
+    </div>
+    <div class="field"><label>Calorias (kcal)</label><input id="mm-cal" type="number" /></div>
+    <div class="field"><label>Proteína (g)</label><input id="mm-protein" type="number" /></div>
+    <div class="field"><label>Carboidrato (g)</label><input id="mm-carbs" type="number" /></div>
+    <div class="field"><label>Gordura (g)</label><input id="mm-fats" type="number" /></div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" onclick="document.getElementById('dialog-manual-meal').close()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveManualMeal()">Salvar</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dialog-new-workout">
+  <div class="dialog-inner">
+    <h3>Novo treino</h3>
+    <div class="field"><label>Nome</label><input id="wk-name" type="text" placeholder="Ex: Treino de pernas" /></div>
+    <div class="field"><label>Duração (min)</label><input id="wk-duration" type="number" /></div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" onclick="document.getElementById('dialog-new-workout').close()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveWorkout()">Salvar</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dialog-weight">
+  <div class="dialog-inner">
+    <h3>Registrar peso</h3>
+    <div class="field"><label>Peso (kg)</label><input id="wt-value" type="number" step="0.1" /></div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" onclick="document.getElementById('dialog-weight').close()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveWeight()">Salvar</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dialog-body-scan">
+  <div class="dialog-inner">
+    <h3>Escaneamento corporal</h3>
+    <p style="font-size:0.85rem;color:#6B7268;margin-top:-8px">
+      Tire 3 fotos: de frente, de lado e de costas. A IA é uma estimativa visual
+      e não substitui bioimpedância, exame DEXA ou avaliação profissional.
+    </p>
+    <div class="field">
+      <label>Foto de frente</label>
+      <input id="bs-front" type="file" accept="image/*" capture="environment" style="display:block" />
+    </div>
+    <div class="field">
+      <label>Foto de lado</label>
+      <input id="bs-side" type="file" accept="image/*" capture="environment" style="display:block" />
+    </div>
+    <div class="field">
+      <label>Foto de costas</label>
+      <input id="bs-back" type="file" accept="image/*" capture="environment" style="display:block" />
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" onclick="document.getElementById('dialog-body-scan').close()">Cancelar</button>
+      <button class="btn btn-primary" onclick="submitBodyScan()">Analisar</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+// ==========================================================
+// CONFIGURAÇÃO — troque pelos dados do SEU projeto Supabase
+// (Project Settings → API)
+// ==========================================================
+const SUPABASE_URL = "https://SEU-PROJETO.supabase.co";
+const SUPABASE_ANON_KEY = "SUA_CHAVE_ANON_PUBLICA";
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let mealsRealtimeChannel = null;
+let bodyScanRealtimeChannel = null;
+
+// ---------------------------------------------------------
+// AUTH
+// ---------------------------------------------------------
+function toggleAuthMode(){
+  const login = document.getElementById('login-form');
+  const signup = document.getElementById('signup-form');
+  login.style.display = login.style.display === 'none' ? 'block' : 'none';
+  signup.style.display = signup.style.display === 'none' ? 'block' : 'none';
+  hideAuthError();
+}
+
+function showAuthError(message){
+  const el = document.getElementById('auth-error');
+  el.textContent = message;
+  el.style.display = 'block';
+}
+function hideAuthError(){
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+async function handleSignup(){
+  hideAuthError();
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  if(!email || !password){ showAuthError('Preencha e-mail e senha.'); return; }
+
+  const { error } = await db.auth.signUp({
+    email, password,
+    options: { data: { display_name: name || 'Usuário VivaLeve' } }
+  });
+  if(error){ showAuthError(error.message); return; }
+  showAuthError('Conta criada! Verifique seu e-mail se a confirmação estiver ativada, ou já pode entrar.');
+}
+
+async function handleLogin(){
+  hideAuthError();
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const { error } = await db.auth.signInWithPassword({ email, password });
+  if(error){ showAuthError(error.message); }
+}
+
+async function handleLogout(){
+  await db.auth.signOut();
+}
+
+db.auth.onAuthStateChange((event, session) => {
+  if(session?.user){
+    currentUser = session.user;
+    enterApp();
+  } else {
+    currentUser = null;
+    exitApp();
+  }
+});
+
+async function enterApp(){
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+
+  const { data: profile } = await db.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+  document.getElementById('greeting-name').textContent = (profile?.display_name || 'Usuário VivaLeve').split(' ')[0];
+  document.getElementById('stat-streak').textContent = profile?.streak_days ?? 0;
+
+  subscribeMealsRealtime();
+  subscribeBodyScanRealtime();
+  await Promise.all([loadTodayMeals(), loadTodayWater(), loadWorkouts(), loadProgress(), loadLatestBodyScan()]);
+}
+
+function exitApp(){
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  if(mealsRealtimeChannel){ db.removeChannel(mealsRealtimeChannel); mealsRealtimeChannel = null; }
+  if(bodyScanRealtimeChannel){ db.removeChannel(bodyScanRealtimeChannel); bodyScanRealtimeChannel = null; }
+}
+
+// ---------------------------------------------------------
+// NAVEGAÇÃO
+// ---------------------------------------------------------
+function showTab(name){
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+}
+
+function startOfTodayISO(){
+  const d = new Date(); d.setHours(0,0,0,0);
+  return d.toISOString();
+}
+
+// ---------------------------------------------------------
+// NUTRIÇÃO — manual
+// ---------------------------------------------------------
+function openManualMealDialog(){
+  ['mm-name','mm-cal','mm-protein','mm-carbs','mm-fats'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('dialog-manual-meal').showModal();
+}
+
+async function saveManualMeal(){
+  const payload = {
+    user_id: currentUser.id,
+    name: document.getElementById('mm-name').value.trim() || 'Refeição',
+    meal_type: document.getElementById('mm-type').value,
+    calories: Number(document.getElementById('mm-cal').value) || 0,
+    protein: Number(document.getElementById('mm-protein').value) || 0,
+    carbs: Number(document.getElementById('mm-carbs').value) || 0,
+    fats: Number(document.getElementById('mm-fats').value) || 0,
+    status: 'completed'
+  };
+  const { error } = await db.from('meals').insert(payload);
+  document.getElementById('dialog-manual-meal').close();
+  if(error){ alert('Erro ao salvar: ' + error.message); return; }
+  await loadTodayMeals();
+}
+
+// ---------------------------------------------------------
+// NUTRIÇÃO — foto por IA
+// ---------------------------------------------------------
+async function handlePhotoSelected(evt){
+  const file = evt.target.files[0];
+  evt.target.value = '';
+  if(!file) return;
+
+  // 1. cria a linha da refeição já como "processing"
+  const { data: mealRow, error: insertError } = await db.from('meals')
+    .insert({ user_id: currentUser.id, meal_type: 'snack', status: 'processing' })
+    .select().single();
+
+  if(insertError){ alert('Erro ao iniciar análise: ' + insertError.message); return; }
+
+  await loadTodayMeals(); // já mostra o card "analisando..."
+
+  // 2. sobe a foto pro Storage, na pasta do usuário
+  const path = `${currentUser.id}/${mealRow.id}.jpg`;
+  const { error: uploadError } = await db.storage.from('meal-photos').upload(path, file, { upsert: true });
+
+  if(uploadError){
+    await db.from('meals').update({ status: 'error', error_message: 'Falha no upload da foto.' }).eq('id', mealRow.id);
+    await loadTodayMeals();
+    return;
+  }
+
+  await db.from('meals').update({ image_path: path }).eq('id', mealRow.id);
+
+  // 3. chama a Edge Function que analisa com Gemini (a tela atualiza sozinha via Realtime)
+  const { error: fnError } = await db.functions.invoke('analyze-meal-photo', {
+    body: { mealId: mealRow.id, path }
+  });
+  if(fnError){
+    await db.from('meals').update({ status: 'error', error_message: 'Falha ao acionar a análise por IA.' }).eq('id', mealRow.id);
+    await loadTodayMeals();
+  }
+}
+
+function subscribeMealsRealtime(){
+  mealsRealtimeChannel = db.channel('meals-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'meals', filter: `user_id=eq.${currentUser.id}` },
+      () => { loadTodayMeals(); })
+    .subscribe();
+}
+
+async function loadTodayMeals(){
+  const { data, error } = await db.from('meals')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .gte('created_at', startOfTodayISO())
+    .order('created_at', { ascending: false });
+
+  if(error) return;
+
+  renderMealsList('nutrition-meals-list', data);
+  renderMealsList('dashboard-meals-list', data.slice(0, 3));
+
+  const totalCalories = data.filter(m => m.status === 'completed').reduce((sum, m) => sum + (m.calories || 0), 0);
+  document.getElementById('stat-calories').textContent = totalCalories;
+}
+
+function renderMealsList(containerId, meals){
+  const container = document.getElementById(containerId);
+  if(!meals.length){
+    container.innerHTML = '<div class="empty-hint">Nenhuma refeição registrada ainda hoje.</div>';
+    return;
+  }
+  container.innerHTML = meals.map(m => {
+    let pillClass = 'done', pillText = `${m.calories ?? 0} kcal`;
+    if(m.status === 'processing'){ pillClass = 'processing'; pillText = 'Analisando…'; }
+    if(m.status === 'error'){ pillClass = 'error'; pillText = 'Erro'; }
+    return `<div class="list-item">
+      <div class="meta">
+        <span class="name">${m.name || 'Refeição'}</span>
+        <span class="sub">${mealTypeLabel(m.meal_type)}${m.ai_score ? ' · nota IA ' + m.ai_score : ''}</span>
+      </div>
+      <span class="pill ${pillClass}">${pillText}</span>
+    </div>`;
+  }).join('');
+}
+
+function mealTypeLabel(type){
+  return { breakfast: 'Café da manhã', lunch: 'Almoço', snack: 'Lanche', dinner: 'Jantar' }[type] || 'Refeição';
+}
+
+// ---------------------------------------------------------
+// ÁGUA
+// ---------------------------------------------------------
+async function addWater(liters){
+  await db.from('water_logs').insert({ user_id: currentUser.id, amount_liters: liters });
+  await loadTodayWater();
+}
+
+async function loadTodayWater(){
+  const { data } = await db.from('water_logs').select('amount_liters')
+    .eq('user_id', currentUser.id).gte('created_at', startOfTodayISO());
+  const total = (data || []).reduce((sum, r) => sum + Number(r.amount_liters), 0);
+  document.getElementById('stat-water').textContent = total.toFixed(1).replace('.', ',') + 'L';
+}
+
+// ---------------------------------------------------------
+// TREINO
+// ---------------------------------------------------------
+function openNewWorkoutDialog(){
+  document.getElementById('wk-name').value = '';
+  document.getElementById('wk-duration').value = '';
+  document.getElementById('dialog-new-workout').showModal();
+}
+
+async function saveWorkout(){
+  const name = document.getElementById('wk-name').value.trim();
+  if(!name){ return; }
+  await db.from('workouts').insert({
+    user_id: currentUser.id, name,
+    duration_minutes: Number(document.getElementById('wk-duration').value) || null
+  });
+  document.getElementById('dialog-new-workout').close();
+  await loadWorkouts();
+}
+
+async function loadWorkouts(){
+  const { data } = await db.from('workouts').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+  const container = document.getElementById('workout-list');
+  if(!data || !data.length){
+    container.innerHTML = '<div class="empty-hint">Nenhum treino cadastrado ainda.</div>';
+    return;
+  }
+  container.innerHTML = data.map(w => `
+    <div class="list-item">
+      <div class="meta">
+        <span class="name">${w.name}</span>
+        <span class="sub">${w.duration_minutes ? w.duration_minutes + ' min' : ''}</span>
+      </div>
+      ${w.status === 'completed'
+        ? '<span class="pill done">Concluído</span>'
+        : `<button class="btn btn-secondary" style="width:auto;padding:8px 14px" onclick="completeWorkout('${w.id}')">Concluir</button>`}
+    </div>`).join('');
+}
+
+async function completeWorkout(id){
+  await db.from('workouts').update({ status: 'completed', completed_at: new Date().toISOString() }).eq('id', id);
+  await loadWorkouts();
+}
+
+// ---------------------------------------------------------
+// PROGRESSO
+// ---------------------------------------------------------
+function openWeightDialog(){
+  document.getElementById('wt-value').value = '';
+  document.getElementById('dialog-weight').showModal();
+}
+
+async function saveWeight(){
+  const value = Number(document.getElementById('wt-value').value);
+  if(!value) return;
+  await db.from('progress_logs').insert({ user_id: currentUser.id, weight_kg: value });
+  await db.from('profiles').update({ weight_kg: value }).eq('id', currentUser.id);
+  document.getElementById('dialog-weight').close();
+  await loadProgress();
+}
+
+async function loadProgress(){
+  const { data } = await db.from('progress_logs').select('*').eq('user_id', currentUser.id).order('recorded_at', { ascending: true });
+  const container = document.getElementById('progress-list');
+  // Escaneamento corporal também grava em progress_logs (só gordura/massa magra,
+  // sem peso) — aqui filtramos pra essa lista/gráfico mostrarem só peso.
+  const weightEntries = (data || []).filter(p => p.weight_kg != null);
+  if(!weightEntries.length){
+    container.innerHTML = '<div class="empty-hint">Nenhum registro de peso ainda.</div>';
+    document.getElementById('weight-chart').innerHTML = '';
+    return;
+  }
+  container.innerHTML = weightEntries.slice().reverse().map(p => `
+    <div class="list-item">
+      <div class="meta">
+        <span class="name">${Number(p.weight_kg).toFixed(1)} kg</span>
+        <span class="sub">${new Date(p.recorded_at).toLocaleDateString('pt-BR')}</span>
+      </div>
+    </div>`).join('');
+  drawWeightChart(weightEntries);
+}
+
+function drawWeightChart(data){
+  const svg = document.getElementById('weight-chart');
+  const weights = data.map(d => Number(d.weight_kg));
+  const min = Math.min(...weights), max = Math.max(...weights);
+  const range = (max - min) || 1;
+  const w = 300, h = 140, pad = 10;
+
+  const points = weights.map((val, i) => {
+    const x = pad + (i / Math.max(weights.length - 1, 1)) * (w - pad * 2);
+    const y = h - pad - ((val - min) / range) * (h - pad * 2);
+    return `${x},${y}`;
+  }).join(' ');
+
+  svg.innerHTML = `
+    <polyline points="${points}" fill="none" stroke="#2F5233" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+    ${weights.map((val, i) => {
+      const x = pad + (i / Math.max(weights.length - 1, 1)) * (w - pad * 2);
+      const y = h - pad - ((val - min) / range) * (h - pad * 2);
+      return `<circle cx="${x}" cy="${y}" r="3.5" fill="#E8A33D" />`;
+    }).join('')}
+  `;
+}
+
+// ---------------------------------------------------------
+// ESCANEAMENTO CORPORAL (Fase 2)
+// ---------------------------------------------------------
+function openBodyScanDialog(){
+  ['bs-front','bs-side','bs-back'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('dialog-body-scan').showModal();
+}
+
+async function submitBodyScan(){
+  const frontFile = document.getElementById('bs-front').files[0];
+  const sideFile = document.getElementById('bs-side').files[0];
+  const backFile = document.getElementById('bs-back').files[0];
+
+  if(!frontFile || !sideFile || !backFile){
+    alert('Envie as 3 fotos (frente, lado e costas) antes de analisar.');
+    return;
+  }
+
+  document.getElementById('dialog-body-scan').close();
+
+  // 1. cria a linha do escaneamento já como "processing"
+  const { data: scanRow, error: insertError } = await db.from('body_scans')
+    .insert({ user_id: currentUser.id, status: 'processing' })
+    .select().single();
+
+  if(insertError){ alert('Erro ao iniciar escaneamento: ' + insertError.message); return; }
+
+  renderBodyScan(scanRow); // já mostra "analisando..."
+
+  // 2. sobe as 3 fotos, cada uma na pasta do usuário
+  const frontPath = `${currentUser.id}/${scanRow.id}_front.jpg`;
+  const sidePath = `${currentUser.id}/${scanRow.id}_side.jpg`;
+  const backPath = `${currentUser.id}/${scanRow.id}_back.jpg`;
+
+  const uploads = await Promise.all([
+    db.storage.from('body-scans').upload(frontPath, frontFile, { upsert: true }),
+    db.storage.from('body-scans').upload(sidePath, sideFile, { upsert: true }),
+    db.storage.from('body-scans').upload(backPath, backFile, { upsert: true }),
+  ]);
+
+  const uploadError = uploads.find(u => u.error)?.error;
+  if(uploadError){
+    await db.from('body_scans').update({ status: 'error', error_message: 'Falha no upload das fotos.' }).eq('id', scanRow.id);
+    await loadLatestBodyScan();
+    return;
+  }
+
+  await db.from('body_scans').update({ front_path: frontPath, side_path: sidePath, back_path: backPath }).eq('id', scanRow.id);
+
+  // 3. chama a Edge Function que analisa com Gemini (a tela atualiza sozinha via Realtime)
+  const { error: fnError } = await db.functions.invoke('analyze-body-scan', {
+    body: { scanId: scanRow.id, frontPath, sidePath, backPath }
+  });
+  if(fnError){
+    await db.from('body_scans').update({ status: 'error', error_message: 'Falha ao acionar a análise por IA.' }).eq('id', scanRow.id);
+    await loadLatestBodyScan();
+  }
+}
+
+function subscribeBodyScanRealtime(){
+  bodyScanRealtimeChannel = db.channel('body-scans-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'body_scans', filter: `user_id=eq.${currentUser.id}` },
+      () => { loadLatestBodyScan(); })
+    .subscribe();
+}
+
+async function loadLatestBodyScan(){
+  const { data } = await db.from('body_scans')
+    .select('*').eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false }).limit(1).maybeSingle();
+  renderBodyScan(data);
+}
+
+function renderBodyScan(scan){
+  const container = document.getElementById('body-scan-result');
+  if(!scan){
+    container.innerHTML = '<div class="empty-hint">Nenhum escaneamento corporal ainda.</div>';
+    return;
+  }
+  if(scan.status === 'processing'){
+    container.innerHTML = '<div class="list-item"><div class="meta"><span class="name">Analisando suas fotos…</span><span class="sub">Isso leva alguns segundos</span></div><span class="pill processing">Processando</span></div>';
+    return;
+  }
+  if(scan.status === 'error'){
+    container.innerHTML = `<div class="list-item"><div class="meta"><span class="name">Não deu certo</span><span class="sub">${scan.error_message || ''}</span></div><span class="pill error">Erro</span></div>`;
+    return;
+  }
+  container.innerHTML = `
+    <div class="stat-row">
+      <div class="stat"><div class="value">${Number(scan.body_fat_estimate_percent).toFixed(1)}%</div><div class="label">gordura (estim.)</div></div>
+      <div class="stat"><div class="value">${Number(scan.muscle_mass_estimate_percent).toFixed(1)}%</div><div class="label">massa magra (estim.)</div></div>
+    </div>
+    <p style="font-size:0.85rem;line-height:1.5;margin:4px 0"><strong>Postura:</strong> ${scan.posture_assessment || '—'}</p>
+    <p style="font-size:0.85rem;line-height:1.5;margin:4px 0"><strong>Simetria:</strong> ${scan.symmetry_notes || '—'}</p>
+    <p style="font-size:0.85rem;line-height:1.5;margin:8px 0 0">${scan.overall_analysis || ''}</p>
+  `;
+}
+</script>
+
+</body>
+</html>
