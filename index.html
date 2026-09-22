@@ -59,6 +59,7 @@
   .btn-card-outline{ background:transparent; border:1.5px solid var(--line-light); color:var(--card-ink); }
   .auth-switch{ margin-top:16px; text-align:center; font-size:0.86rem; color:var(--ink-soft); }
   .auth-error{ background:rgba(242,104,92,0.15); color:#FF9C90; border-radius:10px; padding:10px 12px; font-size:0.83rem; margin-bottom:14px; display:none; }
+  dialog .auth-error{ background:var(--danger-soft); color:var(--danger); }
 
   /* ---------- App shell ---------- */
   #app{ display:none; flex-direction:column; flex:1; }
@@ -478,6 +479,16 @@
               <div class="meta"><span class="name">🛍️ Marketplace &amp; Indicações</span><span class="sub">Consultores, suplementos e indicações</span></div><span class="arrow">›</span>
             </div>
           </div>
+
+          <div class="section-title">Minha Conta</div>
+          <div class="card menu-list">
+            <div class="list-item" onclick="openChangePasswordDialog()">
+              <div class="meta"><span class="name">🔑 Trocar senha</span></div><span class="arrow">›</span>
+            </div>
+            <div class="list-item" onclick="handleLogout()">
+              <div class="meta"><span class="name">🚪 Sair</span></div><span class="arrow">›</span>
+            </div>
+          </div>
         </div>
 
         <div class="ptab-panel" data-ptab-panel="nutritionist" style="display:none">
@@ -686,6 +697,19 @@
     <div class="dialog-actions">
       <button class="btn btn-card-outline" onclick="document.getElementById('dialog-expense').close()">Cancelar</button>
       <button class="btn btn-primary" onclick="saveExpense()">Salvar</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dialog-change-password">
+  <div class="dialog-inner">
+    <h3>Trocar senha</h3>
+    <div class="auth-error" id="change-password-error"></div>
+    <div class="field"><label>Nova senha</label><input id="cp-new-password" type="password" autocomplete="new-password" /></div>
+    <div class="field"><label>Confirmar nova senha</label><input id="cp-confirm-password" type="password" autocomplete="new-password" /></div>
+    <div class="dialog-actions">
+      <button class="btn btn-card-outline" onclick="document.getElementById('dialog-change-password').close()">Cancelar</button>
+      <button class="btn btn-primary" onclick="submitChangePassword()">Salvar</button>
     </div>
   </div>
 </dialog>
@@ -1886,6 +1910,31 @@ async function loadNutritionistPanel(){
   `;
 }
 function recCategoryLabelClient(c){ return { alimentar:'Alimentar', habitos:'Hábitos', hidratacao:'Hidratação', rotina:'Rotina', estrategia:'Estratégia', observacoes:'Observações' }[c] || c; }
+
+// ---------------------------------------------------------
+// TROCAR SENHA
+// ---------------------------------------------------------
+function openChangePasswordDialog(){
+  document.getElementById('cp-new-password').value = '';
+  document.getElementById('cp-confirm-password').value = '';
+  document.getElementById('change-password-error').style.display = 'none';
+  document.getElementById('dialog-change-password').showModal();
+}
+async function submitChangePassword(){
+  const errEl = document.getElementById('change-password-error');
+  errEl.style.display = 'none';
+  const newPassword = document.getElementById('cp-new-password').value;
+  const confirmPassword = document.getElementById('cp-confirm-password').value;
+
+  if(newPassword.length < 6){ errEl.textContent = 'A senha precisa ter pelo menos 6 caracteres.'; errEl.style.display = 'block'; return; }
+  if(newPassword !== confirmPassword){ errEl.textContent = 'As senhas não coincidem.'; errEl.style.display = 'block'; return; }
+
+  const { error } = await db.auth.updateUser({ password: newPassword });
+  if(error){ errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+
+  document.getElementById('dialog-change-password').close();
+  showToast('Senha atualizada com sucesso!');
+}
 </script>
 </body>
 </html>
