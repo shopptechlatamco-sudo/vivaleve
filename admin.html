@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>VivaLeve — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  :root{
+    --bg:#12181F; --bg-soft:#1B232C; --card:#FFFFFF; --ink:#F2F5F7; --ink-soft:#9AA7B4;
+    --card-ink:#1B232C; --card-ink-soft:#6E7A87; --accent:#31D48D; --accent-dark:#20B279;
+    --accent-soft:#E1F9EE; --danger:#F2685C; --danger-soft:#FCE4E1; --warn:#E8B84B;
+    --line:#28323C; --line-light:#E7EBEE;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; }
+  .shell{ max-width:1080px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
+  h1,h2,h3{ margin:0; }
+  .btn{ padding:10px 15px; border-radius:10px; border:none; font-weight:700; font-size:0.85rem; cursor:pointer; font-family:'Inter',sans-serif; }
+  .btn-primary{ background:var(--accent); color:#082014; }
+  .btn-outline{ background:transparent; border:1.5px solid var(--line); color:var(--ink); }
+  .btn-card-outline{ background:transparent; border:1.5px solid var(--line-light); color:var(--card-ink); }
+  .btn-danger{ background:var(--danger); color:#fff; }
+  .btn-ghost{ background:none; border:none; color:var(--accent); font-weight:700; cursor:pointer; padding:4px 8px; font-size:0.82rem; }
+  .btn-block{ width:100%; }
+
+  #gate{ flex:1; display:flex; align-items:center; justify-content:center; padding:32px; }
+  .gate-card{ max-width:400px; width:100%; background:var(--bg-soft); border-radius:18px; padding:32px; text-align:center; }
+  .gate-card h1{ color:var(--accent); font-size:1.6rem; margin-bottom:16px; }
+  .field{ margin-bottom:14px; text-align:left; }
+  .field label{ display:block; font-size:0.78rem; color:var(--ink-soft); margin-bottom:6px; }
+  .field input{ width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:10px; background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; font-size:0.92rem; }
+  .auth-error{ background:rgba(242,104,92,0.15); color:#FF9C90; border-radius:8px; padding:10px 12px; font-size:0.83rem; margin-bottom:14px; display:none; text-align:left; }
+
+  #app{ display:none; flex-direction:column; flex:1; }
+  header.top{ display:flex; align-items:center; justify-content:space-between; padding:18px 24px; border-bottom:1px solid var(--line); }
+  header.top .brand{ color:var(--accent); font-weight:800; font-size:1.15rem; }
+  header.top button{ background:none; border:none; color:var(--ink-soft); font-size:0.84rem; cursor:pointer; }
+
+  nav.tabs{ display:flex; gap:4px; padding:0 24px; border-bottom:1px solid var(--line); overflow-x:auto; }
+  nav.tabs button{ background:none; border:none; color:var(--ink-soft); font-weight:700; font-size:0.86rem; padding:14px 14px 12px; cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; }
+  nav.tabs button.active{ color:var(--accent); border-color:var(--accent); }
+
+  main{ flex:1; padding:24px; overflow-y:auto; }
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  .stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-bottom:24px; }
+  .stat-card{ background:var(--bg-soft); border:1px solid var(--line); border-radius:14px; padding:16px; }
+  .stat-card .lbl{ font-size:0.76rem; color:var(--ink-soft); margin-bottom:8px; }
+  .stat-card .val{ font-size:1.6rem; font-weight:800; }
+
+  .card{ background:var(--card); color:var(--card-ink); border-radius:16px; padding:20px; margin-bottom:16px; }
+  .section-title{ font-size:1rem; font-weight:800; margin:24px 0 12px; }
+
+  .filter-row{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .filter-chip{ padding:8px 14px; border-radius:20px; border:1px solid var(--line); background:var(--bg-soft); color:var(--ink-soft); font-size:0.82rem; cursor:pointer; }
+  .filter-chip.active{ background:var(--accent); color:#082014; border-color:var(--accent); }
+  .search-input{ flex:1; min-width:200px; padding:10px 14px; border-radius:10px; border:1px solid var(--line); background:var(--bg-soft); color:var(--ink); }
+
+  table.data-table{ width:100%; border-collapse:collapse; background:var(--card); border-radius:14px; overflow:hidden; }
+  table.data-table th{ text-align:left; font-size:0.7rem; color:var(--card-ink-soft); padding:12px 14px; border-bottom:1px solid var(--line-light); text-transform:uppercase; letter-spacing:0.03em; }
+  table.data-table td{ padding:12px 14px; border-bottom:1px solid var(--line-light); font-size:0.84rem; color:var(--card-ink); vertical-align:top; }
+  table.data-table tr:last-child td{ border-bottom:none; }
+
+  .pill{ font-size:0.7rem; padding:4px 10px; border-radius:20px; font-weight:700; background:var(--line-light); color:var(--card-ink-soft); white-space:nowrap; }
+  .pill.active{ background:var(--accent-soft); color:var(--accent-dark); }
+  .pill.suspended, .pill.revoked{ background:var(--danger-soft); color:var(--danger); }
+  .pill.pending{ background:#FBEFD2; color:#8A6410; }
+  .pill.admin{ background:#E4E1FB; color:#4B3FA8; }
+  .pill.nutritionist{ background:#DCEFFB; color:#1E6FA8; }
+  .pill.client{ background:var(--line-light); color:var(--card-ink-soft); }
+
+  .empty-hint{ color:var(--ink-soft); font-size:0.88rem; padding:24px; text-align:center; border:1px dashed var(--line); border-radius:14px; }
+
+  dialog{ border:none; border-radius:16px; padding:0; width:min(94vw,420px); background:var(--card); color:var(--card-ink); }
+  dialog::backdrop{ background:rgba(10,14,18,0.6); }
+  .dialog-inner{ padding:22px; }
+  .dialog-field{ margin-bottom:12px; }
+  .dialog-field label{ display:block; font-size:0.78rem; color:var(--card-ink-soft); margin-bottom:5px; }
+  .dialog-field input, .dialog-field select{ width:100%; padding:10px 12px; border:1px solid var(--line-light); border-radius:9px; background:#F7F8F9; color:var(--card-ink); font-family:'Inter',sans-serif; font-size:0.88rem; }
+  .dialog-actions{ display:flex; gap:10px; margin-top:16px; }
+  .dialog-actions .btn{ flex:1; }
+
+  .toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:#0E1116; color:#fff; padding:11px 18px; border-radius:12px; font-size:0.84rem; z-index:60; opacity:0; transition:opacity .2s; pointer-events:none; max-width:80%; text-align:center; }
+  .toast.show{ opacity:1; }
+
+  @media (max-width:720px){
+    .stat-grid{ grid-template-columns:repeat(2,1fr); }
+    table.data-table thead{ display:none; }
+    table.data-table, table.data-table tbody, table.data-table tr, table.data-table td{ display:block; width:100%; }
+    table.data-table tr{ padding:12px 14px; border-bottom:1px solid var(--line-light); }
+    table.data-table td{ border:none; padding:2px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ============ GATE ============ -->
+  <section id="gate">
+    <div class="gate-card">
+      <h1>VivaLeve Admin</h1>
+      <div class="auth-error" id="auth-error"></div>
+      <div class="field"><label>E-mail</label><input id="login-email" type="email" /></div>
+      <div class="field"><label>Senha</label><input id="login-password" type="password" /></div>
+      <button class="btn btn-primary btn-block" onclick="handleLogin()">Entrar</button>
+    </div>
+  </section>
+
+  <!-- ============ APP ============ -->
+  <div id="app">
+    <header class="top">
+      <span class="brand">VivaLeve Admin</span>
+      <button onclick="handleLogout()">Sair</button>
+    </header>
+
+    <nav class="tabs">
+      <button class="active" data-view="metrics" onclick="showView('metrics')">Métricas</button>
+      <button data-view="users" onclick="showView('users')">Usuários</button>
+      <button data-view="nutritionists" onclick="showView('nutritionists')">Nutricionistas</button>
+      <button data-view="clients" onclick="showView('clients')">Clientes</button>
+      <button data-view="premium" onclick="showView('premium')">Premium</button>
+      <button data-view="audit" onclick="showView('audit')">Auditoria</button>
+    </nav>
+
+    <main>
+      <!-- MÉTRICAS -->
+      <section class="view active" id="view-metrics">
+        <div class="stat-grid" id="metrics-grid"><div class="empty-hint">Carregando…</div></div>
+      </section>
+
+      <!-- USUÁRIOS -->
+      <section class="view" id="view-users">
+        <div class="filter-row"><input class="search-input" id="users-search" placeholder="Buscar por nome…" oninput="renderUsersTable()" /></div>
+        <div id="users-table-wrap"><div class="empty-hint">Carregando…</div></div>
+      </section>
+
+      <!-- NUTRICIONISTAS -->
+      <section class="view" id="view-nutritionists">
+        <div class="filter-row">
+          <button class="filter-chip active" data-f="all" onclick="setNutriFilter('all')">Todos</button>
+          <button class="filter-chip" data-f="pending" onclick="setNutriFilter('pending')">Pendentes</button>
+          <button class="filter-chip" data-f="active" onclick="setNutriFilter('active')">Ativos</button>
+          <button class="filter-chip" data-f="suspended" onclick="setNutriFilter('suspended')">Suspensos</button>
+        </div>
+        <div id="nutritionists-table-wrap"><div class="empty-hint">Carregando…</div></div>
+      </section>
+
+      <!-- CLIENTES -->
+      <section class="view" id="view-clients">
+        <div class="filter-row"><input class="search-input" id="clients-search" placeholder="Buscar por nome…" oninput="renderClientsAdminTable()" /></div>
+        <div id="clients-admin-table-wrap"><div class="empty-hint">Carregando…</div></div>
+      </section>
+
+      <!-- PREMIUM -->
+      <section class="view" id="view-premium">
+        <div class="section-title">Conceder Premium</div>
+        <div class="card" style="max-width:480px">
+          <p style="font-size:0.8rem;color:var(--card-ink-soft);margin-top:0">Busque o cliente pelo nome na aba <strong>Clientes</strong> primeiro, copie o ID (veja no console/URL) — ou use este atalho por nome:</p>
+          <div class="dialog-field"><label>Nome do cliente</label><input id="premium-client-name" type="text" placeholder="Nome exato do cliente" /></div>
+          <div class="dialog-field"><label>Período</label>
+            <select id="premium-period">
+              <option value="7">7 dias</option><option value="30" selected>30 dias</option>
+              <option value="90">90 dias</option><option value="180">180 dias</option><option value="365">365 dias</option>
+            </select>
+          </div>
+          <div class="dialog-field"><label>Motivo</label><input id="premium-reason" type="text" /></div>
+          <button class="btn btn-primary" onclick="adminGrantPremium()">Conceder</button>
+        </div>
+        <div class="section-title">Histórico de concessões</div>
+        <div id="premium-grants-list"><div class="empty-hint">Carregando…</div></div>
+      </section>
+
+      <!-- AUDITORIA -->
+      <section class="view" id="view-audit">
+        <div class="filter-row">
+          <select id="audit-action-filter" onchange="loadAudit()" style="padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg-soft);color:var(--ink)">
+            <option value="">Todas as ações</option>
+            <option value="consultation_created">Consulta criada</option>
+            <option value="goal_created">Meta criada</option>
+            <option value="recommendation_created">Orientação criada</option>
+            <option value="nutritionist_clients_created">Cliente vinculado</option>
+            <option value="premium_granted">Premium concedido</option>
+            <option value="premium_revoked">Premium revogado</option>
+            <option value="nutritionist_status_changed">Status de nutricionista alterado</option>
+          </select>
+        </div>
+        <div id="audit-table-wrap"><div class="empty-hint">Carregando…</div></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<dialog id="dialog-revoke-premium">
+  <div class="dialog-inner">
+    <h3>Revogar Premium</h3>
+    <div class="dialog-field"><label>Motivo</label><input id="revoke-reason" type="text" /></div>
+    <div class="dialog-actions">
+      <button class="btn btn-card-outline" onclick="document.getElementById('dialog-revoke-premium').close()">Cancelar</button>
+      <button class="btn btn-danger" onclick="confirmRevokePremium()">Revogar</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = "https://mpawamfjthakwrkrsutn.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1wYXdhbWZqdGhha3dya3JzdXRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwMzk1NDksImV4cCI6MjEwNTYxNTU0OX0.xsUyXi_imjzvSGZlBhRynntIB7aSkX-HKZtexYk7TD4";
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let usersCache = [], nutriCache = [], clientsAdminCache = [];
+let nutriFilter = 'all';
+let revokeTargetClientId = null;
+
+function showToast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+async function handleLogin(){
+  document.getElementById('auth-error').style.display = 'none';
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const { error } = await db.auth.signInWithPassword({ email, password });
+  if(error){ const el = document.getElementById('auth-error'); el.textContent = error.message; el.style.display = 'block'; }
+}
+async function handleLogout(){ await db.auth.signOut(); }
+
+db.auth.onAuthStateChange(async (event, session) => {
+  if(session?.user){
+    currentUser = session.user;
+    const { data: profile } = await db.from('profiles').select('role').eq('id', currentUser.id).maybeSingle();
+    if(profile?.role !== 'admin'){
+      document.getElementById('auth-error').textContent = 'Essa conta não tem acesso administrativo.';
+      document.getElementById('auth-error').style.display = 'block';
+      await db.auth.signOut();
+      return;
+    }
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    await loadMetrics();
+  } else {
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('gate').style.display = 'flex';
+  }
+});
+
+function showView(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+  if(name === 'metrics') loadMetrics();
+  if(name === 'users') loadUsers();
+  if(name === 'nutritionists') loadNutritionists();
+  if(name === 'clients') loadClientsAdmin();
+  if(name === 'premium') loadPremiumGrants();
+  if(name === 'audit') loadAudit();
+}
+
+// ---------------------------------------------------------
+// MÉTRICAS
+// ---------------------------------------------------------
+async function loadMetrics(){
+  const [{ count: totalUsers }, { count: totalNutris }, { count: activeNutris }, { count: totalClients }, { count: premiumActive }, { count: totalConsults }, { count: completedConsults }] = await Promise.all([
+    db.from('profiles').select('id', { count:'exact', head:true }),
+    db.from('nutritionists').select('id', { count:'exact', head:true }),
+    db.from('nutritionists').select('id', { count:'exact', head:true }).eq('partnership_status','active'),
+    db.from('profiles').select('id', { count:'exact', head:true }).eq('role','client'),
+    db.from('profiles').select('id', { count:'exact', head:true }).eq('is_premium', true).gt('premium_expires_at', new Date().toISOString()),
+    db.from('consultations').select('id', { count:'exact', head:true }),
+    db.from('consultations').select('id', { count:'exact', head:true }).eq('status','completed'),
+  ]);
+
+  document.getElementById('metrics-grid').innerHTML = `
+    <div class="stat-card"><div class="lbl">Total de usuários</div><div class="val">${totalUsers||0}</div></div>
+    <div class="stat-card"><div class="lbl">Nutricionistas (total)</div><div class="val">${totalNutris||0}</div></div>
+    <div class="stat-card"><div class="lbl">Nutricionistas ativos</div><div class="val">${activeNutris||0}</div></div>
+    <div class="stat-card"><div class="lbl">Clientes</div><div class="val">${totalClients||0}</div></div>
+    <div class="stat-card"><div class="lbl">Premium ativos</div><div class="val">${premiumActive||0}</div></div>
+    <div class="stat-card"><div class="lbl">Consultas (total / concluídas)</div><div class="val">${totalConsults||0} / ${completedConsults||0}</div></div>
+  `;
+}
+
+// ---------------------------------------------------------
+// USUÁRIOS
+// ---------------------------------------------------------
+async function loadUsers(){
+  const { data } = await db.from('profiles').select('id,display_name,role,is_premium,premium_expires_at,created_at').order('created_at', { ascending:false }).limit(200);
+  usersCache = data || [];
+  renderUsersTable();
+}
+function renderUsersTable(){
+  const search = (document.getElementById('users-search').value || '').toLowerCase();
+  const rows = usersCache.filter(u => (u.display_name||'').toLowerCase().includes(search));
+  const wrap = document.getElementById('users-table-wrap');
+  if(!rows.length){ wrap.innerHTML = '<div class="empty-hint">Nenhum usuário encontrado.</div>'; return; }
+  wrap.innerHTML = `<table class="data-table"><thead><tr><th>Nome</th><th>Papel</th><th>Premium</th><th>Criado em</th></tr></thead><tbody>
+    ${rows.map(u => {
+      const isPremium = u.is_premium && u.premium_expires_at && new Date(u.premium_expires_at) > new Date();
+      return `<tr><td><strong>${u.display_name||'—'}</strong></td><td><span class="pill ${u.role}">${roleLabel(u.role)}</span></td>
+      <td>${isPremium ? `<span class="pill active">Até ${new Date(u.premium_expires_at).toLocaleDateString('pt-BR')}</span>` : '—'}</td>
+      <td>${new Date(u.created_at).toLocaleDateString('pt-BR')}</td></tr>`;
+    }).join('')}
+  </tbody></table>`;
+}
+function roleLabel(r){ return { admin:'Admin', nutritionist:'Nutricionista', client:'Cliente' }[r] || r; }
+
+// ---------------------------------------------------------
+// NUTRICIONISTAS
+// ---------------------------------------------------------
+async function loadNutritionists(){
+  const { data: nutris } = await db.from('nutritionists').select('*').order('created_at', { ascending:false });
+  const ids = (nutris||[]).map(n => n.id);
+  const safeIds = ids.length ? ids : ['00000000-0000-0000-0000-000000000000'];
+  const { data: profiles } = await db.from('profiles').select('id,display_name').in('id', safeIds);
+  const nameMap = Object.fromEntries((profiles||[]).map(p => [p.id, p.display_name]));
+
+  const clientCounts = {};
+  const { data: links } = await db.from('nutritionist_clients').select('nutritionist_id').in('nutritionist_id', safeIds);
+  (links||[]).forEach(l => { clientCounts[l.nutritionist_id] = (clientCounts[l.nutritionist_id]||0) + 1; });
+
+  nutriCache = (nutris||[]).map(n => ({ ...n, name: nameMap[n.id] || 'Sem nome', clientCount: clientCounts[n.id] || 0 }));
+  renderNutritionistsTable();
+}
+function setNutriFilter(f){
+  nutriFilter = f;
+  document.querySelectorAll('#view-nutritionists .filter-chip').forEach(b => b.classList.toggle('active', b.dataset.f === f));
+  renderNutritionistsTable();
+}
+function renderNutritionistsTable(){
+  const rows = nutriCache.filter(n => nutriFilter === 'all' || n.partnership_status === nutriFilter);
+  const wrap = document.getElementById('nutritionists-table-wrap');
+  if(!rows.length){ wrap.innerHTML = '<div class="empty-hint">Nenhum nutricionista nesse filtro.</div>'; return; }
+  wrap.innerHTML = `<table class="data-table"><thead><tr><th>Nome</th><th>CRN</th><th>Clientes</th><th>Status</th><th>Ações</th></tr></thead><tbody>
+    ${rows.map(n => `<tr>
+      <td><strong>${n.name}</strong></td><td>${n.credential_number||'—'}</td><td>${n.clientCount}</td>
+      <td><span class="pill ${n.partnership_status}">${nutriStatusLabel(n.partnership_status)}</span></td>
+      <td>
+        ${n.partnership_status !== 'active' ? `<button class="btn-ghost" onclick="setNutriStatus('${n.id}','active')">Aprovar/Ativar</button>` : ''}
+        ${n.partnership_status !== 'suspended' ? `<button class="btn-ghost" style="color:var(--danger)" onclick="setNutriStatus('${n.id}','suspended')">Suspender</button>` : ''}
+      </td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+function nutriStatusLabel(s){ return { pending:'Pendente', active:'Ativo', suspended:'Suspenso' }[s] || s; }
+async function setNutriStatus(id, status){
+  const { error } = await db.rpc('set_nutritionist_status', { p_nutritionist_id: id, p_new_status: status });
+  if(error){ showToast('Erro: ' + error.message); return; }
+  showToast('Status atualizado.');
+  await loadNutritionists();
+}
+
+// ---------------------------------------------------------
+// CLIENTES
+// ---------------------------------------------------------
+async function loadClientsAdmin(){
+  const { data } = await db.from('profiles').select('id,display_name,is_premium,premium_expires_at').eq('role','client').order('created_at', { ascending:false }).limit(300);
+  const ids = (data||[]).map(p => p.id);
+  const safeIds = ids.length ? ids : ['00000000-0000-0000-0000-000000000000'];
+  const { data: links } = await db.from('nutritionist_clients').select('client_id,nutritionist_id,status').in('client_id', safeIds).eq('status','active');
+  const nutriIds = [...new Set((links||[]).map(l => l.nutritionist_id))];
+  const { data: nutriProfiles } = await db.from('profiles').select('id,display_name').in('id', nutriIds.length?nutriIds:['00000000-0000-0000-0000-000000000000']);
+  const nutriNameMap = Object.fromEntries((nutriProfiles||[]).map(p => [p.id, p.display_name]));
+  const linkMap = Object.fromEntries((links||[]).map(l => [l.client_id, nutriNameMap[l.nutritionist_id] || 'Nutricionista']));
+
+  clientsAdminCache = (data||[]).map(c => ({ ...c, nutritionistName: linkMap[c.id] || null }));
+  renderClientsAdminTable();
+}
+function renderClientsAdminTable(){
+  const search = (document.getElementById('clients-search').value || '').toLowerCase();
+  const rows = clientsAdminCache.filter(c => (c.display_name||'').toLowerCase().includes(search));
+  const wrap = document.getElementById('clients-admin-table-wrap');
+  if(!rows.length){ wrap.innerHTML = '<div class="empty-hint">Nenhum cliente encontrado.</div>'; return; }
+  wrap.innerHTML = `<table class="data-table"><thead><tr><th>Nome</th><th>Nutricionista</th><th>Premium</th><th>ID</th></tr></thead><tbody>
+    ${rows.map(c => {
+      const isPremium = c.is_premium && c.premium_expires_at && new Date(c.premium_expires_at) > new Date();
+      return `<tr><td><strong>${c.display_name||'—'}</strong></td><td>${c.nutritionistName || '—'}</td>
+      <td>${isPremium ? `<span class="pill active">Até ${new Date(c.premium_expires_at).toLocaleDateString('pt-BR')}</span>` : '—'}</td>
+      <td style="font-size:0.72rem;color:var(--card-ink-soft)">${c.id}</td></tr>`;
+    }).join('')}
+  </tbody></table>`;
+}
+
+// ---------------------------------------------------------
+// PREMIUM
+// ---------------------------------------------------------
+async function adminGrantPremium(){
+  const name = document.getElementById('premium-client-name').value.trim();
+  if(!name){ showToast('Informe o nome do cliente.'); return; }
+  const { data: matches } = await db.from('profiles').select('id,display_name').eq('role','client').ilike('display_name', name);
+  if(!matches || !matches.length){ showToast('Nenhum cliente encontrado com esse nome exato.'); return; }
+  if(matches.length > 1){ showToast('Mais de um cliente com esse nome — use a aba Clientes pra achar o ID e me avise que eu ajusto esse formulário pra aceitar ID direto.'); return; }
+
+  const period_days = Number(document.getElementById('premium-period').value);
+  const reason = document.getElementById('premium-reason').value.trim() || null;
+  const { error } = await db.rpc('grant_premium', { p_client_id: matches[0].id, p_period_days: period_days, p_reason: reason });
+  if(error){ showToast('Erro: ' + error.message); return; }
+  showToast(`Premium concedido a ${matches[0].display_name}.`);
+  document.getElementById('premium-client-name').value = '';
+  document.getElementById('premium-reason').value = '';
+  await loadPremiumGrants();
+}
+async function loadPremiumGrants(){
+  const { data } = await db.from('premium_grants').select('*').order('created_at', { ascending:false }).limit(100);
+  const ids = [...new Set((data||[]).flatMap(g => [g.client_id, g.granted_by]))];
+  const safeIds = ids.length ? ids : ['00000000-0000-0000-0000-000000000000'];
+  const { data: profiles } = await db.from('profiles').select('id,display_name').in('id', safeIds);
+  const nameMap = Object.fromEntries((profiles||[]).map(p => [p.id, p.display_name]));
+
+  const container = document.getElementById('premium-grants-list');
+  if(!data || !data.length){ container.innerHTML = '<div class="empty-hint">Nenhuma concessão registrada ainda.</div>'; return; }
+  container.innerHTML = `<table class="data-table"><thead><tr><th>Cliente</th><th>Concedido por</th><th>Período</th><th>Vence em</th><th>Motivo</th><th></th></tr></thead><tbody>
+    ${data.map(g => `<tr>
+      <td>${nameMap[g.client_id]||'—'}</td><td>${nameMap[g.granted_by]||'—'} (${g.granted_by_role})</td>
+      <td>${g.period_days} dias</td><td>${new Date(g.expires_at).toLocaleDateString('pt-BR')}</td><td>${g.reason||'—'}</td>
+      <td><button class="btn-ghost" style="color:var(--danger)" onclick="openRevokeDialog('${g.client_id}')">Revogar</button></td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+function openRevokeDialog(clientId){
+  revokeTargetClientId = clientId;
+  document.getElementById('revoke-reason').value = '';
+  document.getElementById('dialog-revoke-premium').showModal();
+}
+async function confirmRevokePremium(){
+  const reason = document.getElementById('revoke-reason').value.trim() || null;
+  const { error } = await db.rpc('revoke_premium', { p_client_id: revokeTargetClientId, p_reason: reason });
+  document.getElementById('dialog-revoke-premium').close();
+  if(error){ showToast('Erro: ' + error.message); return; }
+  showToast('Premium revogado.');
+  await loadPremiumGrants();
+}
+
+// ---------------------------------------------------------
+// AUDITORIA
+// ---------------------------------------------------------
+async function loadAudit(){
+  const actionFilter = document.getElementById('audit-action-filter').value;
+  let query = db.from('audit_logs').select('*').order('created_at', { ascending:false }).limit(150);
+  if(actionFilter) query = query.eq('action', actionFilter);
+  const { data } = await query;
+
+  const ids = [...new Set((data||[]).map(a => a.actor_id).filter(Boolean))];
+  const safeIds = ids.length ? ids : ['00000000-0000-0000-0000-000000000000'];
+  const { data: profiles } = await db.from('profiles').select('id,display_name').in('id', safeIds);
+  const nameMap = Object.fromEntries((profiles||[]).map(p => [p.id, p.display_name]));
+
+  const wrap = document.getElementById('audit-table-wrap');
+  if(!data || !data.length){ wrap.innerHTML = '<div class="empty-hint">Nenhum registro encontrado.</div>'; return; }
+  wrap.innerHTML = `<table class="data-table"><thead><tr><th>Quando</th><th>Quem</th><th>Papel</th><th>Ação</th></tr></thead><tbody>
+    ${data.map(a => `<tr><td>${new Date(a.created_at).toLocaleString('pt-BR')}</td><td>${nameMap[a.actor_id]||'—'}</td>
+    <td><span class="pill ${a.actor_role}">${roleLabel(a.actor_role)}</span></td><td>${a.action}</td></tr>`).join('')}
+  </tbody></table>`;
+}
+</script>
+</body>
+</html>

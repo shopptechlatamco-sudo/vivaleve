@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>VivaLeve — Portal do Nutricionista</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  :root{
+    --bg:#12181F; --bg-soft:#1B232C; --card:#FFFFFF; --ink:#F2F5F7; --ink-soft:#9AA7B4;
+    --card-ink:#1B232C; --card-ink-soft:#6E7A87; --accent:#31D48D; --accent-dark:#20B279;
+    --accent-soft:#E1F9EE; --danger:#F2685C; --danger-soft:#FCE4E1; --warn:#E8B84B;
+    --line:#28323C; --line-light:#E7EBEE;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; }
+  .shell{ max-width:1080px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
+  h1,h2,h3{ margin:0; }
+  .btn{ padding:11px 16px; border-radius:10px; border:none; font-weight:700; font-size:0.88rem; cursor:pointer; font-family:'Inter',sans-serif; }
+  .btn-primary{ background:var(--accent); color:#082014; }
+  .btn-primary:hover{ background:var(--accent-dark); }
+  .btn-outline{ background:transparent; border:1.5px solid var(--line); color:var(--ink); }
+  .btn-card-outline{ background:transparent; border:1.5px solid var(--line-light); color:var(--card-ink); }
+  .btn-ghost{ background:none; border:none; color:var(--accent); font-weight:700; cursor:pointer; padding:6px; }
+  .btn-danger{ background:var(--danger); color:#fff; }
+  .btn-block{ width:100%; }
+
+  /* auth / gate screens */
+  #gate{ flex:1; display:flex; align-items:center; justify-content:center; padding:32px; }
+  .gate-card{ max-width:420px; width:100%; background:var(--bg-soft); border-radius:18px; padding:32px; }
+  .gate-card h1{ color:var(--accent); font-size:1.7rem; margin-bottom:6px; }
+  .gate-card p.sub{ color:var(--ink-soft); font-size:0.9rem; margin:0 0 24px; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:0.78rem; color:var(--ink-soft); margin-bottom:6px; }
+  .field input, .field textarea, .field select{
+    width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:10px;
+    background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; font-size:0.92rem;
+  }
+  .field textarea{ min-height:80px; resize:vertical; }
+  .auth-error{ background:rgba(242,104,92,0.15); color:#FF9C90; border-radius:8px; padding:10px 12px; font-size:0.83rem; margin-bottom:14px; display:none; }
+  .link-row{ text-align:center; margin-top:14px; font-size:0.85rem; color:var(--ink-soft); }
+
+  /* app shell */
+  #app{ display:none; flex-direction:column; flex:1; }
+  header.top{ display:flex; align-items:center; justify-content:space-between; padding:18px 24px; border-bottom:1px solid var(--line); }
+  header.top .brand{ color:var(--accent); font-weight:800; font-size:1.15rem; }
+  header.top .brand small{ display:block; color:var(--ink-soft); font-weight:500; font-size:0.72rem; }
+  header.top button{ background:none; border:none; color:var(--ink-soft); font-size:0.84rem; cursor:pointer; }
+
+  nav.tabs{ display:flex; gap:4px; padding:0 24px; border-bottom:1px solid var(--line); overflow-x:auto; }
+  nav.tabs button{ background:none; border:none; color:var(--ink-soft); font-weight:700; font-size:0.86rem; padding:14px 14px 12px; cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; }
+  nav.tabs button.active{ color:var(--accent); border-color:var(--accent); }
+
+  main{ flex:1; padding:24px; overflow-y:auto; }
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  .stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-bottom:24px; }
+  .stat-card{ background:var(--bg-soft); border:1px solid var(--line); border-radius:14px; padding:16px; }
+  .stat-card .lbl{ font-size:0.76rem; color:var(--ink-soft); margin-bottom:8px; }
+  .stat-card .val{ font-size:1.6rem; font-weight:800; }
+
+  .card{ background:var(--card); color:var(--card-ink); border-radius:16px; padding:20px; margin-bottom:16px; }
+  .section-title{ font-size:1rem; font-weight:800; margin:24px 0 12px; }
+
+  .filter-row{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .filter-chip{ padding:8px 14px; border-radius:20px; border:1px solid var(--line); background:var(--bg-soft); color:var(--ink-soft); font-size:0.82rem; cursor:pointer; }
+  .filter-chip.active{ background:var(--accent); color:#082014; border-color:var(--accent); }
+  .search-input{ flex:1; min-width:200px; padding:10px 14px; border-radius:10px; border:1px solid var(--line); background:var(--bg-soft); color:var(--ink); }
+
+  table.client-table{ width:100%; border-collapse:collapse; background:var(--card); border-radius:14px; overflow:hidden; }
+  table.client-table th{ text-align:left; font-size:0.72rem; color:var(--card-ink-soft); padding:12px 14px; border-bottom:1px solid var(--line-light); text-transform:uppercase; letter-spacing:0.03em; }
+  table.client-table td{ padding:13px 14px; border-bottom:1px solid var(--line-light); font-size:0.86rem; color:var(--card-ink); }
+  table.client-table tr:last-child td{ border-bottom:none; }
+  table.client-table tr.clickable{ cursor:pointer; }
+  table.client-table tr.clickable:hover{ background:#F7F9F8; }
+
+  .pill{ font-size:0.72rem; padding:4px 10px; border-radius:20px; font-weight:700; background:var(--line-light); color:var(--card-ink-soft); }
+  .pill.active{ background:var(--accent-soft); color:var(--accent-dark); }
+  .pill.inactive{ background:var(--danger-soft); color:var(--danger); }
+  .pill.pending{ background:#FBEFD2; color:#8A6410; }
+
+  .empty-hint{ color:var(--ink-soft); font-size:0.88rem; padding:24px; text-align:center; border:1px dashed var(--line); border-radius:14px; }
+  .empty-hint.on-card{ color:var(--card-ink-soft); border-color:var(--line-light); }
+
+  .breadcrumb{ font-size:0.82rem; color:var(--ink-soft); margin-bottom:14px; cursor:pointer; }
+  .breadcrumb:hover{ color:var(--accent); }
+
+  .client-header{ display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+  .avatar{ width:56px; height:56px; border-radius:50%; background:var(--accent); color:#082014; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.3rem; flex-shrink:0; }
+  .client-header .name{ font-size:1.3rem; font-weight:800; }
+  .client-header .meta{ color:var(--ink-soft); font-size:0.84rem; }
+
+  .summary-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:20px; }
+  .summary-card{ background:var(--card); color:var(--card-ink); border-radius:14px; padding:16px; }
+  .summary-card .lbl{ font-size:0.74rem; color:var(--card-ink-soft); margin-bottom:6px; }
+  .summary-card .val{ font-size:1.15rem; font-weight:800; }
+  .summary-card .sub{ font-size:0.76rem; color:var(--card-ink-soft); margin-top:3px; }
+
+  .action-row{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px; }
+
+  .list-item{ display:flex; align-items:flex-start; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--line-light); gap:12px; }
+  .list-item:last-child{ border-bottom:none; }
+  .list-item .meta{ display:flex; flex-direction:column; }
+  .list-item .meta .name{ font-weight:700; font-size:0.9rem; }
+  .list-item .meta .sub{ font-size:0.78rem; color:var(--card-ink-soft); margin-top:2px; white-space:pre-line; }
+
+  .step-block{ margin-bottom:22px; padding-bottom:22px; border-bottom:1px solid var(--line-light); }
+  .step-block:last-child{ border-bottom:none; }
+  .step-block .step-title{ font-weight:800; font-size:0.95rem; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+  .step-num{ width:22px; height:22px; border-radius:50%; background:var(--accent-soft); color:var(--accent-dark); font-size:0.72rem; display:flex; align-items:center; justify-content:center; font-weight:800; }
+  .step-hint{ font-size:0.78rem; color:var(--card-ink-soft); margin-bottom:12px; }
+  .field-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; }
+  .dialog-field{ margin-bottom:12px; }
+  .dialog-field label{ display:block; font-size:0.78rem; color:var(--card-ink-soft); margin-bottom:5px; }
+  .dialog-field input, .dialog-field textarea, .dialog-field select{
+    width:100%; padding:10px 12px; border:1px solid var(--line-light); border-radius:9px; background:#F7F8F9; color:var(--card-ink); font-family:'Inter',sans-serif; font-size:0.88rem;
+  }
+  .dialog-field textarea{ min-height:70px; resize:vertical; }
+  .diff-note{ font-size:0.78rem; color:var(--accent-dark); margin-top:4px; font-weight:600; }
+  .copy-banner{ background:var(--accent-soft); color:#0E4B32; border-radius:12px; padding:14px 16px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; font-size:0.85rem; }
+
+  dialog{ border:none; border-radius:16px; padding:0; width:min(94vw,460px); background:var(--card); color:var(--card-ink); max-height:88vh; }
+  dialog::backdrop{ background:rgba(10,14,18,0.6); }
+  .dialog-inner{ padding:22px; overflow-y:auto; max-height:88vh; }
+  .dialog-actions{ display:flex; gap:10px; margin-top:16px; }
+  .dialog-actions .btn{ flex:1; }
+
+  .code-box{ font-family:monospace; font-size:1.2rem; font-weight:800; background:var(--bg-soft); color:var(--accent); padding:10px 16px; border-radius:10px; letter-spacing:0.1em; display:inline-block; }
+
+  .toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:#0E1116; color:#fff; padding:11px 18px; border-radius:12px; font-size:0.84rem; z-index:60; opacity:0; transition:opacity .2s; pointer-events:none; max-width:80%; text-align:center; }
+  .toast.show{ opacity:1; }
+
+  @media (max-width:720px){
+    .stat-grid, .summary-grid{ grid-template-columns:repeat(2,1fr); }
+    table.client-table thead{ display:none; }
+    table.client-table, table.client-table tbody, table.client-table tr, table.client-table td{ display:block; width:100%; }
+    table.client-table tr{ padding:12px 14px; border-bottom:1px solid var(--line-light); }
+    table.client-table td{ border:none; padding:2px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ============ GATE (auth + status de parceria) ============ -->
+  <section id="gate">
+    <div class="gate-card">
+      <h1>VivaLeve Pro</h1>
+      <p class="sub">Portal do Nutricionista Parceiro</p>
+
+      <div class="auth-error" id="auth-error"></div>
+
+      <div id="login-form">
+        <div class="field"><label>E-mail</label><input id="login-email" type="email" /></div>
+        <div class="field"><label>Senha</label><input id="login-password" type="password" /></div>
+        <button class="btn btn-primary btn-block" onclick="handleLogin()">Entrar</button>
+        <p class="link-row">Ainda não tem conta? <button class="btn-ghost" onclick="toggleAuthMode()">Criar conta</button></p>
+      </div>
+
+      <div id="signup-form" style="display:none">
+        <div class="field"><label>Nome</label><input id="signup-name" type="text" /></div>
+        <div class="field"><label>E-mail</label><input id="signup-email" type="email" /></div>
+        <div class="field"><label>Senha</label><input id="signup-password" type="password" /></div>
+        <button class="btn btn-primary btn-block" onclick="handleSignup()">Criar conta</button>
+        <p class="link-row">Já tem conta? <button class="btn-ghost" onclick="toggleAuthMode()">Entrar</button></p>
+      </div>
+
+      <div id="apply-form" style="display:none">
+        <p class="sub" style="margin-bottom:16px">Você está logado, mas ainda não é um nutricionista parceiro. Preencha pra se candidatar:</p>
+        <div class="field"><label>Número do CRN</label><input id="apply-crn" type="text" placeholder="Ex: CRN-3 12345" /></div>
+        <div class="field"><label>Bio curta</label><textarea id="apply-bio" placeholder="Sua especialidade, experiência..."></textarea></div>
+        <button class="btn btn-primary btn-block" onclick="submitApplication()">Enviar candidatura</button>
+        <p class="link-row"><button class="btn-ghost" onclick="handleLogout()">Sair</button></p>
+      </div>
+
+      <div id="status-pending" style="display:none;text-align:center">
+        <p style="font-size:2rem;margin-bottom:8px">⏳</p>
+        <p class="sub">Sua candidatura está em análise. Assim que o administrador aprovar, você terá acesso ao portal.</p>
+        <button class="btn-ghost" onclick="handleLogout()">Sair</button>
+      </div>
+
+      <div id="status-suspended" style="display:none;text-align:center">
+        <p style="font-size:2rem;margin-bottom:8px">🚫</p>
+        <p class="sub">Sua conta de parceiro está suspensa. Entre em contato com o suporte.</p>
+        <button class="btn-ghost" onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ APP ============ -->
+  <div id="app">
+    <header class="top">
+      <span class="brand">VivaLeve Pro<small id="header-name">—</small></span>
+      <button onclick="handleLogout()">Sair</button>
+    </header>
+
+    <nav class="tabs">
+      <button class="active" data-view="dashboard" onclick="showView('dashboard')">Dashboard</button>
+      <button data-view="clients" onclick="showView('clients')">Meus Clientes</button>
+      <button data-view="invites" onclick="showView('invites')">Convites</button>
+      <button data-view="profile" onclick="showView('profile')">Meu Perfil</button>
+    </nav>
+
+    <main>
+      <!-- DASHBOARD -->
+      <section class="view active" id="view-dashboard">
+        <div class="stat-grid" id="dash-stats"></div>
+        <div class="section-title">Clientes que precisam de atenção</div>
+        <div id="dash-attention"><div class="empty-hint">Carregando…</div></div>
+        <div class="section-title">Últimas atividades</div>
+        <div id="dash-activity"><div class="empty-hint">Carregando…</div></div>
+      </section>
+
+      <!-- CLIENTES -->
+      <section class="view" id="view-clients">
+        <div class="filter-row">
+          <input class="search-input" id="client-search" placeholder="Buscar por nome ou e-mail…" oninput="renderClientTable()" />
+          <button class="filter-chip active" data-filter="all" onclick="setClientFilter('all')">Todos</button>
+          <button class="filter-chip" data-filter="active" onclick="setClientFilter('active')">Ativos</button>
+          <button class="filter-chip" data-filter="inactive" onclick="setClientFilter('inactive')">Inativos</button>
+          <button class="filter-chip" data-filter="premium" onclick="setClientFilter('premium')">Premium</button>
+          <button class="filter-chip" data-filter="free" onclick="setClientFilter('free')">Gratuitos</button>
+          <button class="filter-chip" data-filter="stale" onclick="setClientFilter('stale')">Sem consulta recente</button>
+        </div>
+        <div id="clients-table-wrap"><div class="empty-hint">Carregando…</div></div>
+      </section>
+
+      <!-- CONVITES -->
+      <section class="view" id="view-invites">
+        <div class="action-row"><button class="btn btn-primary" onclick="createInvite()">+ Gerar convite</button></div>
+        <div id="invites-list"><div class="empty-hint">Carregando…</div></div>
+      </section>
+
+      <!-- PERFIL -->
+      <section class="view" id="view-profile">
+        <div class="card" style="max-width:480px">
+          <div class="dialog-field"><label>Nome</label><input id="prof-name" type="text" /></div>
+          <div class="dialog-field"><label>CRN</label><input id="prof-crn" type="text" /></div>
+          <div class="dialog-field"><label>Bio</label><textarea id="prof-bio"></textarea></div>
+          <button class="btn btn-primary" onclick="saveProfile()">Salvar</button>
+          <p style="font-size:0.8rem;color:var(--card-ink-soft);margin-top:14px">Status da parceria: <strong id="prof-status">—</strong></p>
+        </div>
+      </section>
+
+      <!-- RESUMO DO CLIENTE -->
+      <section class="view" id="view-client-summary">
+        <div class="breadcrumb" onclick="showView('clients')">‹ Voltar pra Meus Clientes</div>
+        <div class="client-header">
+          <div class="avatar" id="cs-avatar">—</div>
+          <div><div class="name" id="cs-name">—</div><div class="meta" id="cs-meta">—</div></div>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card"><div class="lbl">ÚLTIMA CONSULTA</div><div class="val" id="cs-last-consult">—</div></div>
+          <div class="summary-card"><div class="lbl">PESO ATUAL</div><div class="val" id="cs-weight">—</div></div>
+          <div class="summary-card"><div class="lbl">EVOLUÇÃO</div><div class="val" id="cs-evolution">—</div></div>
+          <div class="summary-card"><div class="lbl">PRÓXIMA CONSULTA</div><div class="val" id="cs-next-consult">—</div></div>
+          <div class="summary-card"><div class="lbl">META ATUAL</div><div class="val" id="cs-goal">—</div></div>
+          <div class="summary-card"><div class="lbl">PREMIUM</div><div class="val" id="cs-premium">—</div></div>
+        </div>
+
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="openNewConsultation()">+ Nova Consulta</button>
+          <button class="btn btn-outline" onclick="showClientTab('history')">Ver Histórico</button>
+          <button class="btn btn-outline" onclick="showClientTab('evolution')">Ver Evolução</button>
+          <button class="btn btn-outline" onclick="showClientTab('goals')">Ver Metas</button>
+          <button class="btn btn-outline" onclick="showClientTab('recommendations')">Ver Orientações</button>
+          <button class="btn btn-outline" onclick="openGrantPremiumDialog()">Conceder Premium</button>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-bottom:14px">Resumo do acompanhamento</h3>
+          <div id="cs-summary-text"><div class="empty-hint on-card">Carregando…</div></div>
+        </div>
+
+        <div id="client-tab-content"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- ============ DIALOG: NOVA CONSULTA ============ -->
+<dialog id="dialog-consultation">
+  <div class="dialog-inner">
+    <h3 style="margin-bottom:16px">Nova consulta</h3>
+    <div id="copy-previous-banner"></div>
+
+    <div class="step-block">
+      <div class="step-title"><span class="step-num">1</span> Dados da consulta</div>
+      <div class="field-row">
+        <div class="dialog-field"><label>Data</label><input id="nc-date" type="date" /></div>
+        <div class="dialog-field"><label>Próxima consulta (opcional)</label><input id="nc-next-date" type="date" /></div>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-title"><span class="step-num">2</span> Avaliação</div>
+      <div class="step-hint">Deixe em branco o que não for medir agora.</div>
+      <div class="field-row">
+        <div class="dialog-field"><label>Peso (kg) — Atualizar</label><input id="nc-weight" type="number" step="0.1" /></div>
+        <div class="dialog-field"><label>Altura (cm)</label><input id="nc-height" type="number" /></div>
+      </div>
+      <div id="nc-weight-diff" class="diff-note"></div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-title"><span class="step-num">3</span> Medidas — Atualizar</div>
+      <div class="field-row">
+        <div class="dialog-field"><label>Cintura (cm)</label><input id="nc-waist" type="number" /></div>
+        <div class="dialog-field"><label>Quadril (cm)</label><input id="nc-hip" type="number" /></div>
+        <div class="dialog-field"><label>Braço (cm)</label><input id="nc-arm" type="number" /></div>
+        <div class="dialog-field"><label>Coxa (cm)</label><input id="nc-thigh" type="number" /></div>
+      </div>
+      <div id="nc-measure-diff" class="diff-note"></div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-title"><span class="step-num">4</span> Evolução</div>
+      <div id="nc-evolution-view" class="step-hint">Preencha o peso acima pra ver a comparação com a consulta anterior.</div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-title"><span class="step-num">5</span> Metas</div>
+      <div id="nc-goals-list"></div>
+      <button class="btn-ghost" onclick="addGoalRow()">+ Adicionar meta</button>
+    </div>
+
+    <div class="step-block">
+      <div class="step-title"><span class="step-num">6</span> Orientações</div>
+      <div id="nc-recs-list"></div>
+      <button class="btn-ghost" onclick="addRecommendationRow()">+ Adicionar orientação</button>
+    </div>
+
+    <div class="step-block">
+      <div class="step-title"><span class="step-num">7</span> Observações</div>
+      <div class="dialog-field"><textarea id="nc-notes" placeholder="Observações gerais da consulta…"></textarea></div>
+    </div>
+
+    <div class="step-block" style="border-bottom:none">
+      <div class="step-title"><span class="step-num">8</span> Finalização</div>
+      <div class="dialog-actions">
+        <button class="btn btn-card-outline" onclick="saveConsultation('draft')">Salvar rascunho</button>
+        <button class="btn btn-primary" onclick="saveConsultation('completed')">Finalizar consulta</button>
+      </div>
+      <button class="btn-ghost btn-block" style="margin-top:8px" onclick="document.getElementById('dialog-consultation').close()">Cancelar</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ DIALOG: CONCEDER PREMIUM ============ -->
+<dialog id="dialog-grant-premium">
+  <div class="dialog-inner">
+    <h3>Conceder Premium</h3>
+    <div class="dialog-field"><label>Período</label>
+      <select id="grant-period">
+        <option value="7">7 dias</option><option value="30" selected>30 dias</option>
+        <option value="90">90 dias</option><option value="180">180 dias</option>
+        <option value="365">365 dias</option>
+      </select>
+    </div>
+    <div class="dialog-field"><label>Motivo (opcional)</label><input id="grant-reason" type="text" /></div>
+    <div class="dialog-actions">
+      <button class="btn btn-card-outline" onclick="document.getElementById('dialog-grant-premium').close()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmGrantPremium()">Conceder</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==========================================================
+// CONFIGURAÇÃO — mesmas credenciais do app do cliente (mesmo projeto Supabase)
+// ==========================================================
+const SUPABASE_URL = "https://mpawamfjthakwrkrsutn.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1wYXdhbWZqdGhha3dya3JzdXRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwMzk1NDksImV4cCI6MjEwNTYxNTU0OX0.xsUyXi_imjzvSGZlBhRynntIB7aSkX-HKZtexYk7TD4";
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let clientsCache = [];
+let clientFilter = 'all';
+let activeClientId = null;
+let goalRowCount = 0;
+let recRowCount = 0;
+
+function showToast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// ---------------------------------------------------------
+// AUTH + GATE
+// ---------------------------------------------------------
+function toggleAuthMode(){
+  const l = document.getElementById('login-form'), s = document.getElementById('signup-form');
+  l.style.display = l.style.display === 'none' ? 'block' : 'none';
+  s.style.display = s.style.display === 'none' ? 'block' : 'none';
+}
+function hideAllGateForms(){
+  ['login-form','signup-form','apply-form','status-pending','status-suspended'].forEach(id => document.getElementById(id).style.display = 'none');
+}
+function showAuthError(msg){ const el = document.getElementById('auth-error'); el.textContent = msg; el.style.display = 'block'; }
+
+async function handleSignup(){
+  document.getElementById('auth-error').style.display = 'none';
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  if(!email || !password){ showAuthError('Preencha e-mail e senha.'); return; }
+  const { error } = await db.auth.signUp({ email, password, options: { data: { display_name: name || 'Nutricionista' } } });
+  if(error){ showAuthError(error.message); return; }
+  showAuthError('Conta criada! Verifique seu e-mail se a confirmação estiver ativada, ou já pode entrar.');
+}
+async function handleLogin(){
+  document.getElementById('auth-error').style.display = 'none';
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const { error } = await db.auth.signInWithPassword({ email, password });
+  if(error) showAuthError(error.message);
+}
+async function handleLogout(){ await db.auth.signOut(); }
+
+db.auth.onAuthStateChange((event, session) => {
+  if(session?.user){ currentUser = session.user; checkPartnerStatus(); }
+  else { currentUser = null; document.getElementById('app').style.display = 'none'; document.getElementById('gate').style.display = 'flex'; hideAllGateForms(); document.getElementById('login-form').style.display = 'block'; }
+});
+
+async function checkPartnerStatus(){
+  hideAllGateForms();
+  const { data: nutri } = await db.from('nutritionists').select('*').eq('id', currentUser.id).maybeSingle();
+
+  if(!nutri){
+    document.getElementById('apply-form').style.display = 'block';
+    return;
+  }
+  if(nutri.partnership_status === 'pending'){ document.getElementById('status-pending').style.display = 'block'; return; }
+  if(nutri.partnership_status === 'suspended'){ document.getElementById('status-suspended').style.display = 'block'; return; }
+
+  // active
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  const { data: profile } = await db.from('profiles').select('display_name').eq('id', currentUser.id).maybeSingle();
+  document.getElementById('header-name').textContent = profile?.display_name || 'Nutricionista';
+  await loadDashboard();
+}
+
+async function submitApplication(){
+  const credential_number = document.getElementById('apply-crn').value.trim();
+  const bio = document.getElementById('apply-bio').value.trim();
+  const { error } = await db.from('nutritionists').insert({ id: currentUser.id, credential_number, bio, partnership_status: 'pending' });
+  if(error){ showToast('Erro: ' + error.message); return; }
+  await checkPartnerStatus();
+}
+
+// ---------------------------------------------------------
+// NAVEGAÇÃO
+// ---------------------------------------------------------
+function showView(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+  if(name === 'clients') loadClients();
+  if(name === 'invites') loadInvites();
+  if(name === 'profile') loadProfileForm();
+  if(name === 'dashboard') loadDashboard();
+}
+
+// ---------------------------------------------------------
+// DASHBOARD
+// ---------------------------------------------------------
+async function loadDashboard(){
+  const { data: links } = await db.from('nutritionist_clients').select('client_id,status').eq('nutritionist_id', currentUser.id);
+  const clientIds = (links || []).map(l => l.client_id);
+  const activeIds = (links || []).filter(l => l.status === 'active').map(l => l.client_id);
+
+  const safeIds = (arr) => arr.length ? arr : ['00000000-0000-0000-0000-000000000000'];
+
+  const [{ data: profilesData }, { data: consultsData }, { data: activityData }] = await Promise.all([
+    db.from('profiles').select('id,display_name,is_premium,premium_expires_at').in('id', safeIds(clientIds)),
+    db.from('consultations').select('client_id,consultation_date,status').eq('nutritionist_id', currentUser.id),
+    db.from('audit_logs').select('*').eq('actor_id', currentUser.id).order('created_at', { ascending:false }).limit(10),
+  ]);
+
+  const premiumClients = (profilesData || []).filter(p => p.is_premium && p.premium_expires_at && new Date(p.premium_expires_at) > new Date());
+  const premiumExpiringSoon = premiumClients.filter(p => (new Date(p.premium_expires_at) - new Date()) < 7*24*60*60*1000);
+  const completedConsults = (consultsData || []).filter(c => c.status === 'completed');
+
+  const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const lastConsultByClient = {};
+  completedConsults.forEach(c => {
+    if(!lastConsultByClient[c.client_id] || new Date(c.consultation_date) > new Date(lastConsultByClient[c.client_id])) lastConsultByClient[c.client_id] = c.consultation_date;
+  });
+  const staleClients = activeIds.filter(id => !lastConsultByClient[id] || new Date(lastConsultByClient[id]) < thirtyDaysAgo);
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-card"><div class="lbl">Total de clientes</div><div class="val">${clientIds.length}</div></div>
+    <div class="stat-card"><div class="lbl">Clientes ativos</div><div class="val">${activeIds.length}</div></div>
+    <div class="stat-card"><div class="lbl">Sem consulta recente</div><div class="val">${staleClients.length}</div></div>
+    <div class="stat-card"><div class="lbl">Consultas realizadas</div><div class="val">${completedConsults.length}</div></div>
+    <div class="stat-card"><div class="lbl">Clientes Premium</div><div class="val">${premiumClients.length}</div></div>
+    <div class="stat-card"><div class="lbl">Premium vencendo (7d)</div><div class="val">${premiumExpiringSoon.length}</div></div>
+  `;
+
+  const nameMap = Object.fromEntries((profilesData || []).map(p => [p.id, p.display_name]));
+  const attentionItems = staleClients.map(id => `<div class="list-item"><div class="meta"><span class="name">${nameMap[id] || 'Cliente'}</span><span class="sub">Sem consulta nos últimos 30 dias</span></div></div>`);
+  premiumExpiringSoon.forEach(p => attentionItems.push(`<div class="list-item"><div class="meta"><span class="name">${p.display_name}</span><span class="sub">Premium vence em breve (${new Date(p.premium_expires_at).toLocaleDateString('pt-BR')})</span></div></div>`));
+  document.getElementById('dash-attention').innerHTML = attentionItems.length
+    ? `<div class="card">${attentionItems.join('')}</div>` : '<div class="empty-hint">Nenhuma pendência no momento.</div>';
+
+  document.getElementById('dash-activity').innerHTML = (activityData || []).length
+    ? `<div class="card">${activityData.map(a => `<div class="list-item"><div class="meta"><span class="name">${actionLabel(a.action)}</span><span class="sub">${new Date(a.created_at).toLocaleString('pt-BR')}</span></div></div>`).join('')}</div>`
+    : '<div class="empty-hint">Nenhuma atividade ainda.</div>';
+}
+
+function actionLabel(action){
+  const map = {
+    consultation_created: 'Consulta criada', consultation_updated: 'Consulta atualizada',
+    assessment_created: 'Avaliação registrada', goal_created: 'Meta criada', goal_updated: 'Meta atualizada',
+    recommendation_created: 'Orientação registrada', nutritionist_clients_created: 'Cliente vinculado',
+    nutritionist_clients_updated: 'Vínculo atualizado', premium_granted: 'Premium concedido', premium_revoked: 'Premium revogado',
+  };
+  return map[action] || action;
+}
+
+// ---------------------------------------------------------
+// MEUS CLIENTES
+// ---------------------------------------------------------
+async function loadClients(){
+  const { data: links } = await db.from('nutritionist_clients').select('*').eq('nutritionist_id', currentUser.id).order('linked_at', { ascending:false });
+  const clientIds = (links || []).map(l => l.client_id);
+  const safeIds = (arr) => arr.length ? arr : ['00000000-0000-0000-0000-000000000000'];
+
+  const [{ data: profilesData }, { data: consultsData }] = await Promise.all([
+    db.from('profiles').select('id,display_name,is_premium,premium_expires_at,objective').in('id', safeIds(clientIds)),
+    db.from('consultations').select('client_id,consultation_date,next_consultation_date,status').in('client_id', safeIds(clientIds)).eq('nutritionist_id', currentUser.id),
+  ]);
+
+  const profileMap = Object.fromEntries((profilesData || []).map(p => [p.id, p]));
+  clientsCache = (links || []).map(link => {
+    const consults = (consultsData || []).filter(c => c.client_id === link.client_id && c.status === 'completed').sort((a,b) => new Date(b.consultation_date) - new Date(a.consultation_date));
+    const upcoming = (consultsData || []).filter(c => c.client_id === link.client_id && c.next_consultation_date).sort((a,b) => new Date(a.next_consultation_date) - new Date(b.next_consultation_date));
+    return {
+      link, profile: profileMap[link.client_id] || {},
+      lastConsult: consults[0]?.consultation_date || null,
+      nextConsult: upcoming[0]?.next_consultation_date || null,
+    };
+  });
+  renderClientTable();
+}
+
+function setClientFilter(f){
+  clientFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
+  renderClientTable();
+}
+
+function renderClientTable(){
+  const search = (document.getElementById('client-search')?.value || '').toLowerCase();
+  const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  let rows = clientsCache.filter(c => {
+    const name = (c.profile.display_name || '').toLowerCase();
+    if(search && !name.includes(search)) return false;
+    if(clientFilter === 'active') return c.link.status === 'active';
+    if(clientFilter === 'inactive') return c.link.status === 'inactive';
+    if(clientFilter === 'premium') return c.profile.is_premium && c.profile.premium_expires_at && new Date(c.profile.premium_expires_at) > new Date();
+    if(clientFilter === 'free') return !(c.profile.is_premium && c.profile.premium_expires_at && new Date(c.profile.premium_expires_at) > new Date());
+    if(clientFilter === 'stale') return !c.lastConsult || new Date(c.lastConsult) < thirtyDaysAgo;
+    return true;
+  });
+
+  const wrap = document.getElementById('clients-table-wrap');
+  if(!rows.length){ wrap.innerHTML = '<div class="empty-hint">Nenhum cliente encontrado.</div>'; return; }
+
+  wrap.innerHTML = `<table class="client-table"><thead><tr>
+    <th>Nome</th><th>Última consulta</th><th>Próxima</th><th>Premium</th><th>Status</th>
+  </tr></thead><tbody>
+    ${rows.map(c => {
+      const isPremium = c.profile.is_premium && c.profile.premium_expires_at && new Date(c.profile.premium_expires_at) > new Date();
+      return `<tr class="clickable" onclick="openClientSummary('${c.link.client_id}')">
+        <td><strong>${c.profile.display_name || 'Cliente'}</strong></td>
+        <td>${c.lastConsult ? new Date(c.lastConsult).toLocaleDateString('pt-BR') : '—'}</td>
+        <td>${c.nextConsult ? new Date(c.nextConsult).toLocaleDateString('pt-BR') : '—'}</td>
+        <td><span class="pill ${isPremium?'active':''}">${isPremium ? 'Premium' : 'Gratuito'}</span></td>
+        <td><span class="pill ${c.link.status}">${c.link.status === 'active' ? 'Ativo' : 'Inativo'}</span></td>
+      </tr>`;
+    }).join('')}
+  </tbody></table>`;
+}
+
+// ---------------------------------------------------------
+// RESUMO DO CLIENTE
+// ---------------------------------------------------------
+async function openClientSummary(clientId){
+  activeClientId = clientId;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-client-summary').classList.add('active');
+  await loadClientSummary();
+}
+
+async function loadClientSummary(){
+  const [{ data: profile }, { data: link }, { data: consultations }, { data: assessments }, { data: goals }, { data: recs }] = await Promise.all([
+    db.from('profiles').select('*').eq('id', activeClientId).maybeSingle(),
+    db.from('nutritionist_clients').select('*').eq('nutritionist_id', currentUser.id).eq('client_id', activeClientId).maybeSingle(),
+    db.from('consultations').select('*').eq('client_id', activeClientId).eq('nutritionist_id', currentUser.id).order('consultation_date', { ascending:false }),
+    db.from('nutritional_assessments').select('*').eq('client_id', activeClientId).order('created_at', { ascending:false }),
+    db.from('goals').select('*').eq('client_id', activeClientId).eq('nutritionist_id', currentUser.id).order('created_at', { ascending:false }),
+    db.from('recommendations').select('*').eq('client_id', activeClientId).eq('nutritionist_id', currentUser.id).order('created_at', { ascending:false }),
+  ]);
+
+  window._clientDetail = { profile, link, consultations: consultations||[], assessments: assessments||[], goals: goals||[], recs: recs||[] };
+
+  const name = profile?.display_name || 'Cliente';
+  document.getElementById('cs-avatar').textContent = name.slice(0,1).toUpperCase();
+  document.getElementById('cs-name').textContent = name;
+  document.getElementById('cs-meta').textContent = `Acompanhamento desde ${link ? new Date(link.linked_at).toLocaleDateString('pt-BR') : '—'}`;
+
+  const completedConsults = (consultations||[]).filter(c => c.status === 'completed');
+  const lastConsult = completedConsults[0];
+  const nextConsult = (consultations||[]).map(c=>c.next_consultation_date).filter(Boolean).sort()[0];
+  const latestAssessment = (assessments||[])[0];
+  const prevAssessment = (assessments||[])[1];
+  const currentGoal = (goals||[]).find(g => g.status === 'in_progress') || (goals||[]).find(g => g.status === 'pending');
+  const isPremium = profile?.is_premium && profile?.premium_expires_at && new Date(profile.premium_expires_at) > new Date();
+
+  document.getElementById('cs-last-consult').textContent = lastConsult ? new Date(lastConsult.consultation_date).toLocaleDateString('pt-BR') : '—';
+  document.getElementById('cs-weight').textContent = latestAssessment?.weight_kg ? `${latestAssessment.weight_kg} kg` : '—';
+  document.getElementById('cs-evolution').textContent = (latestAssessment?.weight_kg && prevAssessment?.weight_kg)
+    ? `${(latestAssessment.weight_kg - prevAssessment.weight_kg).toFixed(1)} kg` : '—';
+  document.getElementById('cs-next-consult').textContent = nextConsult ? new Date(nextConsult).toLocaleDateString('pt-BR') : '—';
+  document.getElementById('cs-goal').textContent = currentGoal?.objective || '—';
+  document.getElementById('cs-premium').textContent = isPremium ? `Ativo até ${new Date(profile.premium_expires_at).toLocaleDateString('pt-BR')}` : 'Sem Premium';
+
+  const currentRecs = (recs||[]).filter(r => r.is_current);
+  document.getElementById('cs-summary-text').innerHTML = `
+    <p style="font-size:0.86rem;line-height:1.6"><strong>Objetivo:</strong> ${profile?.objective || 'não informado'}<br/>
+    <strong>Última avaliação:</strong> ${latestAssessment ? new Date(latestAssessment.created_at).toLocaleDateString('pt-BR') : 'nenhuma ainda'}<br/>
+    <strong>Metas atuais:</strong> ${(goals||[]).filter(g=>g.status==='pending'||g.status==='in_progress').map(g=>g.objective).join('; ') || 'nenhuma'}<br/>
+    <strong>Orientações atuais:</strong> ${currentRecs.length ? currentRecs.map(r=>r.category).join(', ') : 'nenhuma'}<br/>
+    <strong>Data da última consulta:</strong> ${lastConsult ? new Date(lastConsult.consultation_date).toLocaleDateString('pt-BR') : 'nenhuma ainda'}</p>
+  `;
+
+  showClientTab('history');
+}
+
+function showClientTab(tab){
+  const d = window._clientDetail;
+  const container = document.getElementById('client-tab-content');
+  if(tab === 'history'){
+    const items = d.consultations.filter(c => c.status === 'completed');
+    container.innerHTML = `<div class="section-title">Histórico</div><div class="card">${items.length ? items.map(c => `
+      <div class="list-item"><div class="meta"><span class="name">${new Date(c.consultation_date).toLocaleDateString('pt-BR')}</span>
+      <span class="sub">${c.notes || 'Sem observações'}</span></div></div>`).join('') : '<div class="empty-hint on-card">Nenhuma consulta finalizada ainda.</div>'}</div>`;
+  }
+  if(tab === 'evolution'){
+    const items = d.assessments.slice().reverse();
+    container.innerHTML = `<div class="section-title">Evolução</div><div class="card">${items.length ? `
+      <p style="font-size:0.82rem;color:var(--card-ink-soft);margin-bottom:12px">Primeiro registro: ${items[0].weight_kg||'—'} kg (${new Date(items[0].created_at).toLocaleDateString('pt-BR')}) ·
+      Último: ${items[items.length-1].weight_kg||'—'} kg (${new Date(items[items.length-1].created_at).toLocaleDateString('pt-BR')})</p>
+      ${items.map(a => `<div class="list-item"><div class="meta"><span class="name">${a.weight_kg?a.weight_kg+' kg':'—'}</span><span class="sub">${new Date(a.created_at).toLocaleDateString('pt-BR')}</span></div></div>`).join('')}`
+      : '<div class="empty-hint on-card">Sem dados suficientes ainda.</div>'}</div>`;
+  }
+  if(tab === 'goals'){
+    container.innerHTML = `<div class="section-title">Metas</div><div class="card">${d.goals.length ? d.goals.map(g => `
+      <div class="list-item"><div class="meta"><span class="name">${g.objective}</span><span class="sub">${g.target||''}${g.deadline?' · prazo '+new Date(g.deadline).toLocaleDateString('pt-BR'):''}</span></div>
+      <span class="pill ${g.status==='completed'?'active':''}">${goalStatusLabel(g.status)}</span></div>`).join('') : '<div class="empty-hint on-card">Nenhuma meta registrada.</div>'}</div>`;
+  }
+  if(tab === 'recommendations'){
+    const current = d.recs.filter(r => r.is_current);
+    const past = d.recs.filter(r => !r.is_current);
+    container.innerHTML = `<div class="section-title">Orientações atuais</div><div class="card">${current.length ? current.map(r => `
+      <div class="list-item"><div class="meta"><span class="name">${recCategoryLabel(r.category)}</span><span class="sub">${r.content}</span></div></div>`).join('') : '<div class="empty-hint on-card">Nenhuma orientação atual.</div>'}</div>
+      <div class="section-title">Histórico de orientações</div><div class="card">${past.length ? past.map(r => `
+      <div class="list-item"><div class="meta"><span class="name">${recCategoryLabel(r.category)}</span><span class="sub">${r.content} — substituída em ${new Date(r.superseded_at).toLocaleDateString('pt-BR')}</span></div></div>`).join('') : '<div class="empty-hint on-card">Nenhuma orientação anterior.</div>'}</div>`;
+  }
+}
+function goalStatusLabel(s){ return { pending:'Pendente', in_progress:'Em andamento', completed:'Concluída', cancelled:'Cancelada' }[s] || s; }
+function recCategoryLabel(c){ return { alimentar:'Alimentar', habitos:'Hábitos', hidratacao:'Hidratação', rotina:'Rotina', estrategia:'Estratégia', observacoes:'Observações' }[c] || c; }
+
+// ---------------------------------------------------------
+// NOVA CONSULTA (com copiar consulta anterior)
+// ---------------------------------------------------------
+function openNewConsultation(){
+  document.getElementById('nc-date').value = new Date().toISOString().slice(0,10);
+  ['nc-next-date','nc-weight','nc-height','nc-waist','nc-hip','nc-arm','nc-thigh','nc-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('nc-weight-diff').textContent = '';
+  document.getElementById('nc-measure-diff').textContent = '';
+  document.getElementById('nc-evolution-view').textContent = 'Preencha o peso acima pra ver a comparação com a consulta anterior.';
+  document.getElementById('nc-goals-list').innerHTML = '';
+  document.getElementById('nc-recs-list').innerHTML = '';
+  goalRowCount = 0; recRowCount = 0;
+
+  const d = window._clientDetail;
+  const lastCompleted = d.consultations.find(c => c.status === 'completed');
+  const banner = document.getElementById('copy-previous-banner');
+  banner.innerHTML = lastCompleted ? `<div class="copy-banner">
+    <span>Copiar estrutura da consulta de ${new Date(lastCompleted.consultation_date).toLocaleDateString('pt-BR')}?</span>
+    <button class="btn btn-primary" style="padding:8px 14px" onclick="copyFromPreviousConsultation('${lastCompleted.id}')">Copiar consulta anterior</button>
+  </div>` : '';
+
+  document.getElementById('nc-weight').oninput = updateDiffPreview;
+  document.getElementById('nc-waist').oninput = updateDiffPreview;
+
+  document.getElementById('dialog-consultation').showModal();
+}
+
+function updateDiffPreview(){
+  const d = window._clientDetail;
+  const lastAssessment = d.assessments[0];
+  const weight = Number(document.getElementById('nc-weight').value);
+  const waist = Number(document.getElementById('nc-waist').value);
+
+  if(weight && lastAssessment?.weight_kg){
+    const diff = (weight - lastAssessment.weight_kg).toFixed(1);
+    document.getElementById('nc-weight-diff').textContent = `Peso anterior: ${lastAssessment.weight_kg} kg → Atual: ${weight} kg (Δ ${diff > 0 ? '+' : ''}${diff} kg)`;
+    document.getElementById('nc-evolution-view').textContent = `Peso: ${lastAssessment.weight_kg} kg → ${weight} kg (Δ ${diff > 0 ? '+' : ''}${diff} kg)`;
+  }
+  if(waist && lastAssessment?.circumferences?.cintura){
+    const diff = (waist - lastAssessment.circumferences.cintura).toFixed(1);
+    document.getElementById('nc-measure-diff').textContent = `Cintura anterior: ${lastAssessment.circumferences.cintura} cm → Atual: ${waist} cm (Δ ${diff > 0 ? '+' : ''}${diff} cm)`;
+  }
+}
+
+function copyFromPreviousConsultation(consultationId){
+  const d = window._clientDetail;
+  const prevGoals = d.goals.filter(g => g.status === 'pending' || g.status === 'in_progress');
+  const prevRecs = d.recs.filter(r => r.is_current);
+  const prevConsult = d.consultations.find(c => c.id === consultationId);
+
+  document.getElementById('nc-notes').value = prevConsult?.notes || '';
+  document.getElementById('nc-goals-list').innerHTML = '';
+  document.getElementById('nc-recs-list').innerHTML = '';
+  goalRowCount = 0; recRowCount = 0;
+  prevGoals.forEach(g => addGoalRow(g.objective, g.target, g.deadline));
+  prevRecs.forEach(r => addRecommendationRow(r.category, r.content));
+
+  showToast('Estrutura copiada — peso, medidas e data continuam em branco pra você atualizar.');
+  document.getElementById('copy-previous-banner').innerHTML = '';
+}
+
+function addGoalRow(objective='', target='', deadline=''){
+  const id = 'goal-' + (goalRowCount++);
+  const wrap = document.createElement('div');
+  wrap.id = id;
+  wrap.style.cssText = 'border:1px solid var(--line-light);border-radius:10px;padding:10px;margin-bottom:8px';
+  wrap.innerHTML = `
+    <div class="dialog-field"><label>Objetivo</label><input class="goal-objective" type="text" value="${objective}" placeholder="Ex: perder 5kg" /></div>
+    <div class="field-row">
+      <div class="dialog-field"><label>Meta específica</label><input class="goal-target" type="text" value="${target}" /></div>
+      <div class="dialog-field"><label>Prazo</label><input class="goal-deadline" type="date" value="${deadline||''}" /></div>
+    </div>
+    <button class="btn-ghost" onclick="document.getElementById('${id}').remove()">Remover</button>`;
+  document.getElementById('nc-goals-list').appendChild(wrap);
+}
+
+function addRecommendationRow(category='alimentar', content=''){
+  const id = 'rec-' + (recRowCount++);
+  const wrap = document.createElement('div');
+  wrap.id = id;
+  wrap.style.cssText = 'border:1px solid var(--line-light);border-radius:10px;padding:10px;margin-bottom:8px';
+  wrap.innerHTML = `
+    <div class="dialog-field"><label>Categoria</label>
+      <select class="rec-category">
+        <option value="alimentar" ${category==='alimentar'?'selected':''}>Alimentar</option>
+        <option value="habitos" ${category==='habitos'?'selected':''}>Hábitos</option>
+        <option value="hidratacao" ${category==='hidratacao'?'selected':''}>Hidratação</option>
+        <option value="rotina" ${category==='rotina'?'selected':''}>Rotina</option>
+        <option value="estrategia" ${category==='estrategia'?'selected':''}>Estratégia</option>
+        <option value="observacoes" ${category==='observacoes'?'selected':''}>Observações</option>
+      </select>
+    </div>
+    <div class="dialog-field"><label>Orientação</label><textarea class="rec-content">${content}</textarea></div>
+    <button class="btn-ghost" onclick="document.getElementById('${id}').remove()">Remover</button>`;
+  document.getElementById('nc-recs-list').appendChild(wrap);
+}
+
+async function saveConsultation(status){
+  const weight = Number(document.getElementById('nc-weight').value) || null;
+  const height = Number(document.getElementById('nc-height').value) || null;
+  const bmi = (weight && height) ? Number((weight / Math.pow(height/100, 2)).toFixed(1)) : null;
+  const waist = Number(document.getElementById('nc-waist').value) || null;
+  const hip = Number(document.getElementById('nc-hip').value) || null;
+  const arm = Number(document.getElementById('nc-arm').value) || null;
+  const thigh = Number(document.getElementById('nc-thigh').value) || null;
+
+  const { data: consultation, error } = await db.from('consultations').insert({
+    nutritionist_id: currentUser.id, client_id: activeClientId,
+    consultation_date: document.getElementById('nc-date').value,
+    next_consultation_date: document.getElementById('nc-next-date').value || null,
+    status, notes: document.getElementById('nc-notes').value.trim() || null,
+  }).select().single();
+  if(error){ showToast('Erro ao salvar consulta: ' + error.message); return; }
+
+  if(weight || height || waist || hip || arm || thigh){
+    await db.from('nutritional_assessments').insert({
+      consultation_id: consultation.id, client_id: activeClientId,
+      weight_kg: weight, height_cm: height, bmi,
+      circumferences: (waist||hip||arm||thigh) ? { cintura: waist, quadril: hip, braco: arm, coxa: thigh } : null,
+    });
+    if(weight) await db.from('profiles').update({ weight_kg: weight }).eq('id', activeClientId);
+  }
+
+  const goalRows = document.querySelectorAll('#nc-goals-list > div');
+  for(const row of goalRows){
+    const objective = row.querySelector('.goal-objective').value.trim();
+    if(!objective) continue;
+    await db.from('goals').insert({
+      client_id: activeClientId, nutritionist_id: currentUser.id, consultation_id: consultation.id,
+      objective, target: row.querySelector('.goal-target').value.trim() || null,
+      deadline: row.querySelector('.goal-deadline').value || null, status: 'in_progress',
+    });
+  }
+
+  const recRows = document.querySelectorAll('#nc-recs-list > div');
+  for(const row of recRows){
+    const content = row.querySelector('.rec-content').value.trim();
+    if(!content) continue;
+    const category = row.querySelector('.rec-category').value;
+    // substitui a orientação atual dessa categoria (mantém histórico, nunca apaga)
+    await db.from('recommendations').update({ is_current: false, superseded_at: new Date().toISOString() })
+      .eq('client_id', activeClientId).eq('nutritionist_id', currentUser.id).eq('category', category).eq('is_current', true);
+    await db.from('recommendations').insert({
+      client_id: activeClientId, nutritionist_id: currentUser.id, consultation_id: consultation.id, category, content, is_current: true,
+    });
+  }
+
+  document.getElementById('dialog-consultation').close();
+  showToast(status === 'completed' ? 'Consulta salva com sucesso.' : 'Rascunho salvo.');
+  await loadClientSummary();
+}
+
+// ---------------------------------------------------------
+// PREMIUM
+// ---------------------------------------------------------
+function openGrantPremiumDialog(){ document.getElementById('dialog-grant-premium').showModal(); }
+async function confirmGrantPremium(){
+  const period_days = Number(document.getElementById('grant-period').value);
+  const reason = document.getElementById('grant-reason').value.trim() || null;
+  const { error } = await db.rpc('grant_premium', { p_client_id: activeClientId, p_period_days: period_days, p_reason: reason });
+  document.getElementById('dialog-grant-premium').close();
+  if(error){ showToast('Erro: ' + error.message); return; }
+  showToast('Premium concedido!');
+  await loadClientSummary();
+}
+
+// ---------------------------------------------------------
+// CONVITES
+// ---------------------------------------------------------
+async function createInvite(){
+  const { error } = await db.from('client_invites').insert({ nutritionist_id: currentUser.id });
+  if(error){ showToast('Erro: ' + error.message); return; }
+  await loadInvites();
+}
+async function loadInvites(){
+  const { data } = await db.from('client_invites').select('*').eq('nutritionist_id', currentUser.id).order('created_at', { ascending:false });
+  const container = document.getElementById('invites-list');
+  if(!data || !data.length){ container.innerHTML = '<div class="empty-hint">Nenhum convite gerado ainda.</div>'; return; }
+  container.innerHTML = data.map(inv => {
+    const expired = inv.status === 'pending' && new Date(inv.expires_at) < new Date();
+    const status = expired ? 'expired' : inv.status;
+    return `<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div><span class="code-box">${inv.code}</span>
+      <div style="font-size:0.78rem;color:var(--card-ink-soft);margin-top:6px">Expira em ${new Date(inv.expires_at).toLocaleDateString('pt-BR')}</div></div>
+      <span class="pill ${status==='accepted'?'active':status==='expired'?'inactive':'pending'}">${inviteStatusLabel(status)}</span>
+    </div>`;
+  }).join('');
+}
+function inviteStatusLabel(s){ return { pending:'Pendente', accepted:'Aceito', expired:'Expirado', revoked:'Revogado' }[s] || s; }
+
+// ---------------------------------------------------------
+// PERFIL
+// ---------------------------------------------------------
+async function loadProfileForm(){
+  const [{ data: profile }, { data: nutri }] = await Promise.all([
+    db.from('profiles').select('display_name').eq('id', currentUser.id).maybeSingle(),
+    db.from('nutritionists').select('*').eq('id', currentUser.id).maybeSingle(),
+  ]);
+  document.getElementById('prof-name').value = profile?.display_name || '';
+  document.getElementById('prof-crn').value = nutri?.credential_number || '';
+  document.getElementById('prof-bio').value = nutri?.bio || '';
+  document.getElementById('prof-status').textContent = nutri?.partnership_status === 'active' ? 'Ativa' : nutri?.partnership_status;
+}
+async function saveProfile(){
+  await db.from('profiles').update({ display_name: document.getElementById('prof-name').value.trim() }).eq('id', currentUser.id);
+  await db.from('nutritionists').update({
+    credential_number: document.getElementById('prof-crn').value.trim(),
+    bio: document.getElementById('prof-bio').value.trim(),
+  }).eq('id', currentUser.id);
+  document.getElementById('header-name').textContent = document.getElementById('prof-name').value.trim();
+  showToast('Perfil atualizado.');
+}
+</script>
+</body>
+</html>

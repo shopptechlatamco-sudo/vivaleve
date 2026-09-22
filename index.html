@@ -6,251 +6,228 @@
 <title>VivaLeve</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   :root{
-    --ink:#1C2B22;
-    --paper:#F1EEE2;
-    --paper-2:#E8E3D3;
-    --moss:#2F5233;
-    --moss-light:#3E6B44;
-    --citrus:#E8A33D;
-    --clay:#C1573B;
-    --line:#D3CDB8;
-    --white:#FFFFFF;
-    --danger:#B8433A;
+    --bg:#12181F;
+    --bg-soft:#1B232C;
+    --card:#FFFFFF;
+    --ink:#F2F5F7;
+    --ink-soft:#9AA7B4;
+    --card-ink:#1B232C;
+    --card-ink-soft:#6E7A87;
+    --accent:#31D48D;
+    --accent-dark:#20B279;
+    --accent-soft:#E1F9EE;
+    --danger:#F2685C;
+    --danger-soft:#FCE4E1;
+    --warn:#E8B84B;
+    --line:#28323C;
+    --line-light:#E7EBEE;
   }
   *{box-sizing:border-box;}
   html,body{height:100%;}
   body{
     margin:0;
-    background:var(--paper);
+    background:var(--bg);
     color:var(--ink);
     font-family:'Inter',sans-serif;
     -webkit-font-smoothing:antialiased;
     padding-top:env(safe-area-inset-top,0);
     padding-bottom:env(safe-area-inset-bottom,0);
   }
-  h1,h2,h3,.serif{ font-family:'Fraunces',serif; }
-  .shell{
-    max-width:480px;
-    margin:0 auto;
-    min-height:100vh;
-    background:var(--paper);
-    display:flex;
-    flex-direction:column;
-    position:relative;
-  }
+  .shell{ max-width:430px; margin:0 auto; min-height:100vh; background:var(--bg); display:flex; flex-direction:column; position:relative; }
 
-  /* ---------- Auth screen ---------- */
-  #auth-screen{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    padding:32px 28px;
-  }
-  #auth-screen .wordmark{
-    font-size:2.6rem;
-    font-weight:600;
-    letter-spacing:-0.01em;
-    color:var(--moss);
-    margin:0 0 4px;
-  }
-  #auth-screen .tagline{
-    margin:0 0 36px;
-    color:#5B6259;
-    font-size:0.95rem;
-  }
-  .field{ margin-bottom:16px; }
-  .field label{
-    display:block;
-    font-size:0.8rem;
-    color:#5B6259;
-    margin-bottom:6px;
-  }
+  /* ---------- Auth ---------- */
+  #auth-screen{ flex:1; display:flex; flex-direction:column; justify-content:center; padding:32px 28px; }
+  #auth-screen .wordmark{ font-size:2.4rem; font-weight:800; letter-spacing:-0.01em; color:var(--accent); margin:0 0 4px; }
+  #auth-screen .tagline{ margin:0 0 32px; color:var(--ink-soft); font-size:0.95rem; }
+  .field{ margin-bottom:15px; }
+  .field label{ display:block; font-size:0.78rem; color:var(--ink-soft); margin-bottom:6px; }
   .field input, .field select{
-    width:100%;
-    padding:12px 14px;
-    border:1px solid var(--line);
-    border-radius:10px;
-    background:var(--white);
-    font-family:'Inter',sans-serif;
-    font-size:0.95rem;
-    color:var(--ink);
+    width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:12px;
+    background:var(--bg-soft); font-family:'Inter',sans-serif; font-size:0.95rem; color:var(--ink);
   }
-  .field input:focus, .field select:focus, button:focus-visible{
-    outline:2px solid var(--moss);
-    outline-offset:1px;
-  }
-  .btn{
-    width:100%;
-    padding:13px 16px;
-    border-radius:10px;
-    border:none;
-    font-family:'Inter',sans-serif;
-    font-weight:600;
-    font-size:0.95rem;
-    cursor:pointer;
-  }
-  .btn-primary{ background:var(--moss); color:var(--white); }
-  .btn-primary:hover{ background:var(--moss-light); }
-  .btn-ghost{ background:transparent; color:var(--moss); text-decoration:underline; padding:10px; }
-  .btn-secondary{ background:var(--paper-2); color:var(--ink); }
-  .auth-switch{
-    margin-top:18px;
-    text-align:center;
-    font-size:0.88rem;
-    color:#5B6259;
-  }
-  .auth-error{
-    background:#F6E4E1;
-    color:var(--danger);
-    border-radius:8px;
-    padding:10px 12px;
-    font-size:0.85rem;
-    margin-bottom:14px;
-    display:none;
-  }
+  .field input:focus, .field select:focus, button:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+  .btn{ padding:13px 16px; border-radius:12px; border:none; font-family:'Inter',sans-serif; font-weight:700; font-size:0.92rem; cursor:pointer; }
+  .btn-block{ width:100%; }
+  .btn-primary{ background:var(--accent); color:#082014; }
+  .btn-primary:hover{ background:var(--accent-dark); }
+  .btn-outline{ background:transparent; border:1.5px solid var(--line); color:var(--ink); }
+  .btn-ghost{ background:transparent; color:var(--accent); text-decoration:underline; padding:6px; font-weight:600; }
+  .btn-card-outline{ background:transparent; border:1.5px solid var(--line-light); color:var(--card-ink); }
+  .auth-switch{ margin-top:16px; text-align:center; font-size:0.86rem; color:var(--ink-soft); }
+  .auth-error{ background:rgba(242,104,92,0.15); color:#FF9C90; border-radius:10px; padding:10px 12px; font-size:0.83rem; margin-bottom:14px; display:none; }
 
   /* ---------- App shell ---------- */
   #app{ display:none; flex-direction:column; flex:1; }
-  header.app-header{
-    display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    padding:22px 24px 14px;
-  }
-  header.app-header .greeting{ font-size:1.5rem; font-weight:600; margin:0; }
-  header.app-header .greeting span{ color:var(--moss); }
-  header.app-header button{
-    background:none; border:none; color:#8A8A7B; font-size:0.85rem; cursor:pointer; font-family:'Inter',sans-serif;
-  }
-
-  main{ flex:1; padding:0 24px 100px; overflow-y:auto; }
-  .tab-panel{ display:none; }
+  main{ flex:1; padding:0 18px 110px; overflow-y:auto; }
+  .tab-panel{ display:none; padding-top:18px; }
   .tab-panel.active{ display:block; animation:fade .18s ease; }
   @keyframes fade{ from{opacity:0} to{opacity:1} }
 
-  .stat-row{ display:flex; gap:12px; margin-bottom:22px; }
-  .stat{
-    flex:1;
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:14px 14px 12px;
-    background:var(--white);
+  .top-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .who{ display:flex; align-items:center; gap:10px; }
+  .avatar{
+    width:42px; height:42px; border-radius:50%; background:var(--accent); color:#082014;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem;
+    border:2px solid rgba(49,212,141,0.35);
   }
-  .stat .value{ font-family:'Fraunces',serif; font-size:1.6rem; font-weight:600; line-height:1; }
-  .stat .label{ font-size:0.75rem; color:#6B7268; margin-top:4px; }
-
-  .section-title{
-    font-size:1.05rem;
-    font-weight:600;
-    margin:26px 0 12px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
+  .who .lines{ display:flex; flex-direction:column; line-height:1.15; }
+  .who .brand{ color:var(--accent); font-weight:800; font-size:1rem; }
+  .who .sub{ color:var(--ink-soft); font-size:0.78rem; }
+  .page-title{ font-size:1.15rem; font-weight:800; }
+  .top-actions{ display:flex; align-items:center; gap:8px; }
+  .icon-btn{
+    width:36px; height:36px; border-radius:50%; border:1px solid var(--line); background:var(--bg-soft);
+    color:var(--ink); display:flex; align-items:center; justify-content:center; font-size:1rem; cursor:pointer;
   }
-  .section-title .link-btn{
-    font-size:0.8rem; font-weight:500; color:var(--moss); background:none; border:none; cursor:pointer;
+  .lang-pill{
+    padding:6px 10px; border-radius:20px; background:var(--bg-soft); border:1px solid var(--line);
+    color:var(--ink-soft); font-size:0.78rem; font-weight:700; cursor:pointer;
   }
 
-  .list-item{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:12px 0;
-    border-bottom:1px solid var(--line);
-  }
+  .card{ background:var(--card); color:var(--card-ink); border-radius:18px; padding:18px; margin-bottom:14px; }
+  .card-title{ display:flex; align-items:center; gap:8px; font-size:0.82rem; font-weight:700; color:var(--card-ink-soft); text-transform:none; margin-bottom:10px; }
+  .big-number{ font-size:2.1rem; font-weight:800; line-height:1; }
+  .big-number small{ font-size:1rem; font-weight:600; color:var(--card-ink-soft); }
+  .balance-desc{ font-size:0.86rem; color:var(--card-ink-soft); line-height:1.5; margin:8px 0 14px; }
+  .macro-legend{ display:flex; gap:16px; font-size:0.8rem; color:var(--card-ink-soft); }
+  .macro-legend .dot{ width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; }
+  .balance-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; }
+
+  .stat-row{ display:flex; gap:12px; margin-bottom:14px; }
+  .stat-card{ flex:1; background:var(--card); color:var(--card-ink); border-radius:16px; padding:14px; }
+  .stat-card .head{ display:flex; align-items:center; justify-content:space-between; font-size:0.78rem; font-weight:700; color:var(--card-ink-soft); margin-bottom:8px; }
+  .stat-card .val{ font-size:1.3rem; font-weight:800; }
+  .stat-card .val small{ font-size:0.78rem; font-weight:600; color:var(--card-ink-soft); }
+  .bar-track{ height:6px; border-radius:6px; background:var(--line-light); margin-top:8px; overflow:hidden; }
+  .bar-fill{ height:100%; background:var(--accent-dark); border-radius:6px; }
+  .steps-week{ display:flex; align-items:flex-end; gap:5px; height:34px; margin-top:8px; }
+  .steps-week .col{ flex:1; background:var(--line-light); border-radius:3px; align-self:flex-end; }
+  .steps-week .col.today{ background:var(--accent); }
+
+  .section-title{ font-size:1rem; font-weight:800; color:var(--ink); margin:20px 0 10px; display:flex; align-items:center; justify-content:space-between; }
+  .section-title .link-btn{ font-size:0.78rem; font-weight:700; color:var(--accent); background:none; border:none; cursor:pointer; }
+
+  .segmented{ display:flex; gap:6px; background:var(--bg-soft); padding:4px; border-radius:12px; margin-bottom:16px; }
+  .segmented button{ flex:1; border:none; background:none; color:var(--ink-soft); font-size:0.78rem; font-weight:700; padding:8px 4px; border-radius:9px; cursor:pointer; }
+  .segmented button.active{ background:var(--accent); color:#082014; }
+
+  .date-nav{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .date-nav button{ background:var(--bg-soft); border:1px solid var(--line); color:var(--ink); width:32px; height:32px; border-radius:50%; cursor:pointer; }
+  .date-nav .label{ font-weight:700; font-size:0.9rem; text-align:center; }
+  .date-nav .label small{ display:block; font-weight:500; color:var(--ink-soft); font-size:0.72rem; }
+
+  .macro-line{ margin-bottom:12px; }
+  .macro-line .top{ display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:5px; }
+  .macro-line .top .name{ font-weight:600; }
+  .macro-line .top .amt{ color:var(--card-ink-soft); }
+
+  .hydration-card .h-head{ display:flex; align-items:center; justify-content:space-between; }
+  .h-chips{ display:flex; gap:8px; margin:12px 0 6px; flex-wrap:wrap; }
+  .h-chip{ padding:9px 14px; border-radius:20px; border:1px solid var(--line-light); background:var(--card); color:var(--card-ink); font-size:0.83rem; cursor:pointer; }
+  .h-chip:hover{ border-color:var(--accent); }
+  .points-hint{ font-size:0.74rem; color:var(--accent-dark); font-weight:700; }
+
+  .list-item{ display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--line-light); }
   .list-item:last-child{ border-bottom:none; }
   .list-item .meta{ display:flex; flex-direction:column; }
-  .list-item .meta .name{ font-weight:600; font-size:0.92rem; }
-  .list-item .meta .sub{ font-size:0.78rem; color:#6B7268; margin-top:2px; }
-  .pill{
-    font-size:0.72rem;
-    padding:3px 9px;
-    border-radius:20px;
-    background:var(--paper-2);
-    color:#5B6259;
-    white-space:nowrap;
-  }
-  .pill.processing{ background:#F3E6C8; color:#8A6410; }
-  .pill.error{ background:#F6E4E1; color:var(--danger); }
-  .pill.done{ background:#E1EADD; color:var(--moss); }
+  .list-item .meta .name{ font-weight:700; font-size:0.9rem; }
+  .list-item .meta .sub{ font-size:0.76rem; color:var(--card-ink-soft); margin-top:2px; }
+  .pill{ font-size:0.7rem; padding:4px 10px; border-radius:20px; background:var(--line-light); color:var(--card-ink-soft); white-space:nowrap; font-weight:700; }
+  .pill.processing{ background:#FBEFD2; color:#8A6410; }
+  .pill.error{ background:var(--danger-soft); color:var(--danger); }
+  .pill.done{ background:var(--accent-soft); color:var(--accent-dark); }
 
-  .empty-hint{
-    color:#8A8A7B;
-    font-size:0.88rem;
-    padding:18px 0;
-    text-align:center;
-    border:1px dashed var(--line);
-    border-radius:12px;
-  }
+  .empty-hint{ color:var(--ink-soft); font-size:0.85rem; padding:22px 14px; text-align:center; border:1px dashed var(--line); border-radius:14px; }
+  .empty-hint.on-card{ color:var(--card-ink-soft); border-color:var(--line-light); }
 
-  .fab-row{ display:flex; gap:10px; margin-bottom:6px; }
+  .fab-row{ display:flex; gap:10px; margin-bottom:4px; }
   .fab-row .btn{ flex:1; }
-
   input[type=file]{ display:none; }
 
-  .water-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
-  .water-chip{
-    padding:9px 14px;
-    border-radius:20px;
-    border:1px solid var(--line);
-    background:var(--white);
-    font-size:0.85rem;
-    cursor:pointer;
-  }
-  .water-chip:hover{ border-color:var(--moss); }
-
-  dialog{
-    border:none; border-radius:16px; padding:0; width:min(92vw,420px);
-  }
-  dialog::backdrop{ background:rgba(28,43,34,0.45); }
+  dialog{ border:none; border-radius:18px; padding:0; width:min(92vw,420px); background:var(--card); color:var(--card-ink); }
+  dialog::backdrop{ background:rgba(10,14,18,0.6); }
   .dialog-inner{ padding:22px; }
   .dialog-inner h3{ margin-top:0; }
+  .dialog-inner .field label{ color:var(--card-ink-soft); }
+  .dialog-inner .field input, .dialog-inner .field select{ background:#F7F8F9; color:var(--card-ink); border-color:var(--line-light); }
   .dialog-actions{ display:flex; gap:10px; margin-top:18px; }
+  .dialog-actions .btn{ flex:1; }
 
-  /* ---------- Bottom nav ---------- */
+  #sheet-vision{ width:min(92vw,430px); }
+  .sheet-item{ display:flex; align-items:center; gap:14px; padding:14px 4px; cursor:pointer; border-radius:12px; }
+  .sheet-item:hover{ background:#F5F7F6; }
+  .sheet-item .ic{ width:44px; height:44px; border-radius:14px; background:var(--accent-soft); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+  .sheet-item .tt{ font-weight:700; font-size:0.94rem; }
+  .sheet-item .ds{ font-size:0.78rem; color:var(--card-ink-soft); margin-top:2px; }
+
   nav.tabbar{
-    position:sticky;
-    bottom:0;
-    display:flex;
-    background:var(--white);
-    border-top:1px solid var(--line);
-    padding:10px 8px calc(10px + env(safe-area-inset-bottom,0));
+    position:sticky; bottom:0; display:flex; align-items:flex-end; background:var(--bg-soft);
+    border-top:1px solid var(--line); padding:8px 6px calc(8px + env(safe-area-inset-bottom,0));
   }
   nav.tabbar button{
-    flex:1;
-    background:none;
-    border:none;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:4px;
-    font-family:'Inter',sans-serif;
-    font-size:0.68rem;
-    color:#9A9A8A;
-    cursor:pointer;
-    padding:4px;
+    flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:3px;
+    font-family:'Inter',sans-serif; font-size:0.65rem; color:#7C8A97; cursor:pointer; padding:4px;
   }
-  nav.tabbar button.active{ color:var(--moss); font-weight:600; }
-  nav.tabbar button .dot{
-    width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  nav.tabbar button.active{ color:var(--accent); font-weight:700; }
+  nav.tabbar button.vision-btn{ position:relative; top:-16px; }
+  nav.tabbar button.vision-btn .dot{
+    width:52px; height:52px; border-radius:50%; background:var(--accent); color:#082014;
+    display:flex; align-items:center; justify-content:center; font-size:1.4rem;
+    box-shadow:0 8px 18px rgba(49,212,141,0.35); border:4px solid var(--bg-soft);
   }
+  nav.tabbar button.vision-btn.active .dot{ background:var(--accent-dark); }
+  nav.tabbar button.vision-btn span.lbl{ margin-top:-2px; }
 
-  .chart-wrap{ background:var(--white); border:1px solid var(--line); border-radius:12px; padding:16px; }
-  .chart-wrap svg{ width:100%; height:140px; overflow:visible; }
+  .chat-fab{
+    position:fixed; right:calc(50% - 215px + 18px); bottom:96px; width:52px; height:52px; border-radius:50%;
+    background:var(--accent); color:#082014; border:none; font-size:1.3rem; cursor:pointer;
+    box-shadow:0 8px 18px rgba(49,212,141,0.4); z-index:20;
+  }
+  @media (max-width:430px){ .chat-fab{ right:18px; } }
 
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --paper:#161F1A; --paper-2:#1E2A22; --ink:#EDEAE0; --white:#1E2A22; --line:#2C3A31;
-    }
+  .chart-wrap{ background:var(--card); border-radius:16px; padding:16px; margin-bottom:14px; }
+  .chart-wrap svg{ width:100%; height:130px; overflow:visible; }
+
+  .coach-banner{ background:var(--accent-soft); color:#0E4B32; border-radius:14px; padding:14px 16px; font-size:0.84rem; line-height:1.5; margin-bottom:14px; display:flex; gap:10px; }
+
+  .toggle-row{ display:flex; align-items:center; justify-content:space-between; margin:2px 0 16px; }
+  .toggle-row .lbl{ font-size:0.86rem; font-weight:600; }
+  .switch{ position:relative; width:44px; height:26px; }
+  .switch input{ opacity:0; width:0; height:0; }
+  .switch .slider{ position:absolute; inset:0; background:var(--line-light); border-radius:20px; cursor:pointer; transition:.15s; }
+  .switch .slider:before{ content:""; position:absolute; width:20px; height:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.15s; }
+  .switch input:checked + .slider{ background:var(--accent); }
+  .switch input:checked + .slider:before{ transform:translateX(18px); }
+
+  .exercise-card{ display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--line-light); }
+  .exercise-card:last-child{ border-bottom:none; }
+  .exercise-card .thumb{ width:56px; height:56px; border-radius:12px; background:var(--accent-soft); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.4rem; }
+  .exercise-card .info .name{ font-weight:700; font-size:0.92rem; }
+  .exercise-card .info .desc{ font-size:0.78rem; color:var(--card-ink-soft); margin:3px 0 5px; line-height:1.4; }
+  .exercise-card .info .meta{ font-size:0.78rem; color:var(--accent-dark); font-weight:700; }
+
+  .level-card{ background:var(--card); color:var(--card-ink); border-radius:18px; padding:18px; margin-bottom:14px; }
+  .level-head{ display:flex; align-items:center; gap:12px; }
+  .level-head .lines{ flex:1; }
+  .level-head .name{ font-weight:800; font-size:1.02rem; }
+  .level-head .xp{ font-size:0.78rem; color:var(--card-ink-soft); }
+  .lvl-badge{ background:var(--accent-soft); color:var(--accent-dark); font-weight:800; font-size:0.72rem; padding:4px 9px; border-radius:8px; }
+  .xp-bar{ height:7px; border-radius:6px; background:var(--line-light); margin-top:10px; overflow:hidden; }
+  .xp-bar .fill{ height:100%; background:var(--accent); }
+
+  .menu-list .list-item{ cursor:pointer; }
+  .menu-list .list-item .arrow{ color:var(--card-ink-soft); }
+
+  .toast{
+    position:fixed; left:50%; bottom:110px; transform:translateX(-50%); background:#0E1116; color:#fff;
+    padding:11px 18px; border-radius:12px; font-size:0.84rem; z-index:60; opacity:0; transition:opacity .2s;
+    pointer-events:none; max-width:80%; text-align:center;
   }
-  :root[data-theme="dark"]{
-    --paper:#161F1A; --paper-2:#1E2A22; --ink:#EDEAE0; --white:#1E2A22; --line:#2C3A31;
-  }
+  .toast.show{ opacity:1; }
 </style>
 </head>
 <body>
@@ -260,117 +237,347 @@
   <section id="auth-screen">
     <p class="wordmark">VivaLeve</p>
     <p class="tagline">Nutrição, treino e progresso em um só lugar.</p>
-
     <div class="auth-error" id="auth-error"></div>
 
     <div id="login-form">
-      <div class="field">
-        <label for="login-email">E-mail</label>
-        <input id="login-email" type="email" autocomplete="email" />
-      </div>
-      <div class="field">
-        <label for="login-password">Senha</label>
-        <input id="login-password" type="password" autocomplete="current-password" />
-      </div>
-      <button class="btn btn-primary" onclick="handleLogin()">Entrar</button>
-      <p class="auth-switch">Ainda não tem conta? <button class="btn-ghost" style="width:auto;display:inline;padding:0" onclick="toggleAuthMode()">Criar conta</button></p>
+      <div class="field"><label for="login-email">E-mail</label><input id="login-email" type="email" autocomplete="email" /></div>
+      <div class="field"><label for="login-password">Senha</label><input id="login-password" type="password" autocomplete="current-password" /></div>
+      <button class="btn btn-primary btn-block" onclick="handleLogin()">Entrar</button>
+      <p class="auth-switch">Ainda não tem conta? <button class="btn-ghost" onclick="toggleAuthMode()">Criar conta</button></p>
     </div>
 
     <div id="signup-form" style="display:none">
-      <div class="field">
-        <label for="signup-name">Nome</label>
-        <input id="signup-name" type="text" autocomplete="name" />
-      </div>
-      <div class="field">
-        <label for="signup-email">E-mail</label>
-        <input id="signup-email" type="email" autocomplete="email" />
-      </div>
-      <div class="field">
-        <label for="signup-password">Senha</label>
-        <input id="signup-password" type="password" autocomplete="new-password" />
-      </div>
-      <button class="btn btn-primary" onclick="handleSignup()">Criar conta</button>
-      <p class="auth-switch">Já tem conta? <button class="btn-ghost" style="width:auto;display:inline;padding:0" onclick="toggleAuthMode()">Entrar</button></p>
+      <div class="field"><label for="signup-name">Nome</label><input id="signup-name" type="text" autocomplete="name" /></div>
+      <div class="field"><label for="signup-email">E-mail</label><input id="signup-email" type="email" autocomplete="email" /></div>
+      <div class="field"><label for="signup-password">Senha</label><input id="signup-password" type="password" autocomplete="new-password" /></div>
+      <button class="btn btn-primary btn-block" onclick="handleSignup()">Criar conta</button>
+      <p class="auth-switch">Já tem conta? <button class="btn-ghost" onclick="toggleAuthMode()">Entrar</button></p>
     </div>
   </section>
 
   <!-- ============ APP ============ -->
   <div id="app">
-    <header class="app-header">
-      <h1 class="greeting">Olá, <span id="greeting-name">—</span></h1>
-      <button onclick="handleLogout()">Sair</button>
-    </header>
-
     <main>
+
       <!-- DASHBOARD -->
       <section class="tab-panel active" id="tab-dashboard">
+        <div class="top-row">
+          <div class="who">
+            <div class="avatar" id="avatar-initials">A</div>
+            <div class="lines"><span class="brand">VivaLeve</span><span class="sub" id="dash-greeting">Continue firme!</span></div>
+          </div>
+          <div class="top-actions">
+            <button class="lang-pill" onclick="showToast('Só português por enquanto.')">PT ▾</button>
+            <button class="icon-btn" onclick="showToast('Nenhuma notificação nova.')">🔔</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚡ Balanço energético</div>
+          <div class="balance-row">
+            <div>
+              <div class="big-number" id="dash-cal-consumed">0<small> / 2.500 kcal</small></div>
+              <p class="balance-desc" id="dash-cal-desc">Registre uma refeição pra começar a acompanhar hoje.</p>
+              <div class="macro-legend">
+                <span><span class="dot" style="background:#31D48D"></span>Carbos <span id="dash-carb-pct">0%</span></span>
+                <span><span class="dot" style="background:#1B232C"></span>Proteína <span id="dash-protein-pct">0%</span></span>
+              </div>
+            </div>
+            <svg width="92" height="92" viewBox="0 0 92 92">
+              <circle cx="46" cy="46" r="40" fill="none" stroke="#E7EBEE" stroke-width="9" />
+              <circle id="dash-ring" cx="46" cy="46" r="40" fill="none" stroke="#31D48D" stroke-width="9"
+                stroke-dasharray="251" stroke-dashoffset="251" stroke-linecap="round" transform="rotate(-90 46 46)" />
+              <text x="46" y="42" text-anchor="middle" font-size="16" font-weight="800" fill="#1B232C" id="dash-ring-val">0</text>
+              <text x="46" y="58" text-anchor="middle" font-size="8" fill="#6E7A87">Restante</text>
+            </svg>
+          </div>
+        </div>
+
         <div class="stat-row">
-          <div class="stat"><div class="value" id="stat-calories">0</div><div class="label">kcal hoje</div></div>
-          <div class="stat"><div class="value" id="stat-water">0,0L</div><div class="label">água hoje</div></div>
-          <div class="stat"><div class="value" id="stat-streak">0</div><div class="label">dias seguidos</div></div>
+          <div class="stat-card">
+            <div class="head">GASTO ATIVO 🔥</div>
+            <div class="val" id="dash-burn">0<small> kcal</small></div>
+            <div style="font-size:0.72rem;color:var(--card-ink-soft);margin-top:2px">Meta <span id="dash-burn-goal">800</span> kcal</div>
+            <div class="bar-track"><div class="bar-fill" id="dash-burn-bar" style="width:0%"></div></div>
+          </div>
+          <div class="stat-card">
+            <div class="head">PASSOS 🚶</div>
+            <div class="val" id="dash-steps">0<small> / 10 mil</small></div>
+            <div class="steps-week" id="dash-steps-week"></div>
+          </div>
         </div>
+        <button class="btn btn-outline btn-block" style="margin-bottom:18px" onclick="openStepsDialog()">Registrar passos</button>
 
-        <div class="section-title">Água de hoje</div>
-        <div class="water-chips">
-          <button class="water-chip" onclick="addWater(0.25)">+ 250 ml</button>
-          <button class="water-chip" onclick="addWater(0.5)">+ 500 ml</button>
-          <button class="water-chip" onclick="addWater(0.7)">+ 700 ml</button>
-        </div>
-
-        <div class="section-title">Últimas refeições
-          <button class="link-btn" onclick="showTab('nutrition')">ver tudo</button>
-        </div>
+        <div class="section-title">Últimas refeições<button class="link-btn" onclick="showTab('nutrition')">ver tudo</button></div>
         <div id="dashboard-meals-list"><div class="empty-hint">Nenhuma refeição registrada ainda hoje.</div></div>
       </section>
 
       <!-- NUTRITION -->
       <section class="tab-panel" id="tab-nutrition">
-        <div class="fab-row">
-          <button class="btn btn-primary" onclick="document.getElementById('photo-input').click()">📷 Foto (IA)</button>
-          <button class="btn btn-secondary" onclick="openManualMealDialog()">✏️ Manual</button>
+        <div class="top-row">
+          <span class="page-title">Diário de Nutrição</span>
+          <button class="icon-btn" onclick="showToast('Nenhuma notificação nova.')">🔔</button>
         </div>
-        <input type="file" id="photo-input" accept="image/*" capture="environment" onchange="handlePhotoSelected(event)" />
 
-        <div class="section-title">Refeições de hoje</div>
-        <div id="nutrition-meals-list"><div class="empty-hint">Nenhuma refeição ainda. Manda uma foto do prato!</div></div>
+        <div class="segmented">
+          <button class="active" data-ntab="diario" onclick="showNutritionTab('diario')">Diário</button>
+          <button data-ntab="cardapio" onclick="showNutritionTab('cardapio')">Cardápio</button>
+          <button data-ntab="compras" onclick="showNutritionTab('compras')">Compras &amp; Finanças</button>
+        </div>
+
+        <div class="ntab-panel" data-ntab-panel="diario">
+          <div class="date-nav">
+            <button onclick="navNutritionDay(-1)">‹</button>
+            <div class="label" id="nutrition-date-label">HOJE<small>—</small></div>
+            <button id="nutrition-next-btn" onclick="navNutritionDay(1)">›</button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Macronutrientes</div>
+            <div class="macro-line">
+              <div class="top"><span class="name">Proteína</span><span class="amt" id="macro-protein-amt">0g de 150g</span></div>
+              <div class="bar-track"><div class="bar-fill" id="macro-protein-bar" style="width:0%"></div></div>
+            </div>
+            <div class="macro-line">
+              <div class="top"><span class="name">Carboidratos</span><span class="amt" id="macro-carbs-amt">0g de 250g</span></div>
+              <div class="bar-track"><div class="bar-fill" id="macro-carbs-bar" style="width:0%"></div></div>
+            </div>
+            <div class="macro-line" style="margin-bottom:2px">
+              <div class="top"><span class="name">Gorduras</span><span class="amt" id="macro-fats-amt">0g de 70g</span></div>
+              <div class="bar-track"><div class="bar-fill" id="macro-fats-bar" style="width:0%"></div></div>
+            </div>
+          </div>
+
+          <div class="card hydration-card">
+            <div class="h-head">
+              <div class="card-title" style="margin-bottom:0">💧 Controle de Hidratação</div>
+              <button class="btn-ghost" style="font-size:0.78rem" onclick="resetWaterToday()">Reiniciar</button>
+            </div>
+            <div class="big-number" id="hydration-total">0,0<small> / 2,5 L</small></div>
+            <div class="h-chips" id="hydration-chips">
+              <button class="h-chip" onclick="addWater(0.25)">+ 250 ml</button>
+              <button class="h-chip" onclick="addWater(0.5)">+ 500 ml</button>
+              <button class="h-chip" onclick="addWater(1.0)">+ 1.0 L</button>
+            </div>
+            <span class="points-hint">+5 pontos por copo de água</span>
+          </div>
+
+          <div class="section-title">Registro do dia</div>
+          <div class="fab-row" id="nutrition-add-row">
+            <button class="btn btn-outline btn-block" style="background:var(--bg-soft)" onclick="document.getElementById('photo-input').click()">📷 Foto (IA)</button>
+            <button class="btn btn-outline btn-block" style="background:var(--bg-soft)" onclick="openManualMealDialog()">✏️ Manual</button>
+          </div>
+          <input type="file" id="photo-input" accept="image/*" capture="environment" onchange="handlePhotoSelected(event)" />
+
+          <div class="card" style="padding-top:6px">
+            <div id="nutrition-meals-list"><div class="empty-hint on-card">Nenhuma refeição ainda.</div></div>
+          </div>
+        </div>
+
+        <div class="ntab-panel" data-ntab-panel="cardapio" style="display:none">
+          <div class="fab-row"><button class="btn btn-primary btn-block" onclick="openMealPlanDialog()">+ Planejar refeição</button></div>
+          <div class="section-title">Próximos 7 dias</div>
+          <div id="menu-list"><div class="empty-hint on-card">Carregando…</div></div>
+        </div>
+
+        <div class="ntab-panel" data-ntab-panel="compras" style="display:none">
+          <div class="card">
+            <div class="card-title">Gasto do mês</div>
+            <div class="big-number" id="grocery-budget-summary">R$ 0,00<small> de R$ 600,00</small></div>
+            <div class="bar-track"><div class="bar-fill" id="grocery-budget-bar" style="width:0%"></div></div>
+            <button class="btn btn-card-outline btn-block" style="margin-top:12px" onclick="openExpenseDialog()">+ Registrar gasto</button>
+          </div>
+          <div class="section-title">Lista de compras</div>
+          <div class="card">
+            <div style="display:flex;gap:8px;margin-bottom:10px">
+              <input id="grocery-new-name" type="text" placeholder="Item" style="flex:2;padding:10px 12px;border-radius:10px;border:1px solid var(--line-light);background:#F7F8F9" />
+              <input id="grocery-new-qty" type="text" placeholder="Qtd." style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--line-light);background:#F7F8F9" />
+              <button class="btn btn-primary" onclick="addGroceryItem()">+</button>
+            </div>
+            <div id="grocery-items-list"><div class="empty-hint on-card">Lista vazia.</div></div>
+          </div>
+        </div>
       </section>
 
       <!-- WORKOUT -->
       <section class="tab-panel" id="tab-workout">
-        <div class="fab-row">
-          <button class="btn btn-primary" onclick="openNewWorkoutDialog()">+ Novo treino</button>
+        <div class="top-row">
+          <span class="page-title" style="color:var(--accent)">VivaLeve Fitness</span>
+          <div class="top-actions">
+            <button class="icon-btn" onclick="showToast('Biblioteca de exercícios chega numa próxima fase.')">📖</button>
+            <button class="icon-btn" onclick="showTab('progress')">📈</button>
+          </div>
         </div>
-        <div class="section-title">Seus treinos</div>
-        <div id="workout-list"><div class="empty-hint">Nenhum treino cadastrado ainda.</div></div>
+
+        <div id="coach-banner-wrap"></div>
+
+        <div class="card" id="workout-plan-card">
+          <div class="empty-hint on-card">Carregando…</div>
+        </div>
+
+        <div class="toggle-row">
+          <span class="lbl">Cronômetro de Descanso Automático</span>
+          <label class="switch"><input type="checkbox" id="rest-timer-toggle" onchange="toggleRestTimer(this.checked)"><span class="slider"></span></label>
+        </div>
+
+        <div class="section-title">Exercícios do Circuito</div>
+        <div id="exercise-list"><div class="empty-hint">Gere um treino pra ver os exercícios aqui.</div></div>
       </section>
 
       <!-- PROGRESS -->
       <section class="tab-panel" id="tab-progress">
-        <div class="fab-row">
-          <button class="btn btn-primary" onclick="openWeightDialog()">+ Registrar peso</button>
+        <div class="level-card">
+          <div class="level-head">
+            <div class="avatar" id="avatar-initials-2">A</div>
+            <div class="lines">
+              <div class="name" id="progress-name">—</div>
+              <div class="xp" id="progress-xp">0 pontos</div>
+            </div>
+            <span class="lvl-badge" id="progress-level">Lvl 1</span>
+          </div>
+          <div class="xp-bar"><div class="fill" id="progress-xp-bar" style="width:0%"></div></div>
         </div>
-        <div class="chart-wrap">
-          <svg id="weight-chart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
-        </div>
-        <div class="section-title">Histórico</div>
-        <div id="progress-list"><div class="empty-hint">Nenhum registro de peso ainda.</div></div>
 
-        <div class="section-title">Escaneamento corporal (IA)</div>
-        <div id="body-scan-result"></div>
-        <div class="fab-row">
-          <button class="btn btn-secondary" onclick="openBodyScanDialog()">📷 Novo escaneamento</button>
+        <div class="segmented">
+          <button class="active" data-ptab="stats" onclick="showProgressTab('stats')">Estatísticas</button>
+          <button data-ptab="nutritionist" onclick="showProgressTab('nutritionist')">Nutricionista</button>
+          <button data-ptab="leagues" onclick="showProgressTab('leagues')">Ligas</button>
+          <button data-ptab="challenges" onclick="showProgressTab('challenges')">Desafios</button>
+          <button data-ptab="feed" onclick="showProgressTab('feed')">Feed</button>
+        </div>
+
+        <div class="ptab-panel" data-ptab-panel="stats">
+          <div class="fab-row">
+            <button class="btn btn-outline btn-block" style="background:var(--bg-soft)" onclick="openWeightDialog()">+ Registrar peso</button>
+          </div>
+          <div class="chart-wrap">
+            <svg id="weight-chart" viewBox="0 0 300 130" preserveAspectRatio="none"></svg>
+          </div>
+          <div class="card" style="padding-top:6px">
+            <div id="progress-list"><div class="empty-hint on-card">Nenhum registro de peso ainda.</div></div>
+          </div>
+
+          <div class="section-title">Escaneamento corporal (IA)</div>
+          <div class="card" style="padding-top:6px"><div id="body-scan-result"></div></div>
+          <div class="fab-row">
+            <button class="btn btn-outline btn-block" style="background:var(--bg-soft)" onclick="openBodyScanDialog()">📷 Novo escaneamento</button>
+          </div>
+
+          <div class="section-title">VivaLeve Premium &amp; Conexões</div>
+          <div class="card menu-list">
+            <div class="list-item" onclick="openPremiumDialog()">
+              <div class="meta"><span class="name">🔒 <span id="premium-menu-label">Desbloquear Premium</span></span><span class="sub" id="premium-menu-sub">Nutricionista IA, gêmeo digital e treinos ilimitados</span></div><span class="arrow">›</span>
+            </div>
+            <div class="list-item" onclick="showToast('Integração com wearables chega numa próxima fase.')">
+              <div class="meta"><span class="name">⌚ Wearables &amp; Integrações</span><span class="sub">Conecte Google Fit ou Apple Health</span></div><span class="arrow">›</span>
+            </div>
+            <div class="list-item" onclick="showToast('Modo Família chega numa próxima fase.')">
+              <div class="meta"><span class="name">👨‍👩‍👧 Modo Família</span><span class="sub">Compartilhe benefícios com até 5 perfis</span></div><span class="arrow">›</span>
+            </div>
+            <div class="list-item" onclick="showToast('Marketplace &amp; Indicações chega numa próxima fase.')">
+              <div class="meta"><span class="name">🛍️ Marketplace &amp; Indicações</span><span class="sub">Consultores, suplementos e indicações</span></div><span class="arrow">›</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ptab-panel" data-ptab-panel="nutritionist" style="display:none">
+          <div id="nutritionist-panel-content"><div class="empty-hint">Carregando…</div></div>
+        </div>
+
+        <div class="ptab-panel" data-ptab-panel="leagues" style="display:none">
+          <div class="card">
+            <div id="league-division-pills" style="display:flex;gap:6px;overflow-x:auto;margin-bottom:14px"></div>
+            <div class="card-title" id="league-title">Sua Liga</div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <div class="big-number" id="league-rank">#—</div>
+              <span style="font-size:0.8rem;color:var(--card-ink-soft)" id="league-days-left">—</span>
+            </div>
+            <p class="balance-desc" id="league-promo-note"></p>
+          </div>
+          <div class="section-title">Placar da divisão</div>
+          <div class="card" style="padding-top:6px"><div id="league-board"><div class="empty-hint on-card">Carregando…</div></div></div>
+        </div>
+
+        <div class="ptab-panel" data-ptab-panel="challenges" style="display:none">
+          <div class="fab-row"><button class="btn btn-primary btn-block" onclick="openNewChallengeDialog()">+ Criar desafio</button></div>
+          <div id="challenges-list"><div class="empty-hint">Carregando…</div></div>
+        </div>
+
+        <div class="ptab-panel" data-ptab-panel="feed" style="display:none">
+          <div class="card">
+            <textarea id="post-content" placeholder="Compartilhe uma refeição, treino ou progresso..."
+              style="width:100%;border:1px solid var(--line-light);border-radius:10px;padding:10px;font-family:'Inter',sans-serif;font-size:0.86rem;resize:vertical;min-height:60px;background:#F7F8F9;color:var(--card-ink)"></textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+              <label class="btn-ghost" style="cursor:pointer">📷 Foto<input type="file" id="post-photo" accept="image/*" style="display:none" /></label>
+              <button class="btn btn-primary" style="padding:9px 18px" onclick="submitPost()">Postar</button>
+            </div>
+          </div>
+          <div id="feed-list"><div class="empty-hint">Carregando…</div></div>
         </div>
       </section>
     </main>
 
+    <button class="chat-fab" onclick="openChatDialog()">💬</button>
+
     <nav class="tabbar">
-      <button class="tab-btn active" data-tab="dashboard" onclick="showTab('dashboard')"><span class="dot">🏠</span>Início</button>
-      <button class="tab-btn" data-tab="nutrition" onclick="showTab('nutrition')"><span class="dot">🍽️</span>Nutrição</button>
-      <button class="tab-btn" data-tab="workout" onclick="showTab('workout')"><span class="dot">🏋️</span>Treino</button>
-      <button class="tab-btn" data-tab="progress" onclick="showTab('progress')"><span class="dot">📈</span>Progresso</button>
+      <button class="tab-btn active" data-tab="dashboard" onclick="showTab('dashboard')"><span>🏠</span><span class="lbl">Início</span></button>
+      <button class="tab-btn" data-tab="workout" onclick="showTab('workout')"><span>🏋️</span><span class="lbl">Treino</span></button>
+      <button class="tab-btn vision-btn" onclick="openVisionSheet()"><span class="dot">◈</span><span class="lbl">Vision</span></button>
+      <button class="tab-btn" data-tab="nutrition" onclick="showTab('nutrition')"><span>🍽️</span><span class="lbl">Nutrição</span></button>
+      <button class="tab-btn" data-tab="progress" onclick="showTab('progress')"><span>📈</span><span class="lbl">Progresso</span></button>
     </nav>
   </div>
 </div>
+
+<!-- ============ VISION SHEET ============ -->
+<dialog id="sheet-vision">
+  <div class="dialog-inner">
+    <h3 style="margin-bottom:2px">VivaLeve Vision</h3>
+    <p style="font-size:0.82rem;color:var(--card-ink-soft);margin-top:0">Escolha rápida de scanner por imagem</p>
+    <div class="sheet-item" onclick="visionScanMeal()">
+      <div class="ic">🍽️</div>
+      <div><div class="tt">Escanear Refeição</div><div class="ds">Calcule calorias e nutrientes do prato</div></div>
+    </div>
+    <div class="sheet-item" onclick="visionScanBody()">
+      <div class="ic">📷</div>
+      <div><div class="tt">Escanear Corpo</div><div class="ds">Analise métricas para seu Gêmeo Digital</div></div>
+    </div>
+    <div class="sheet-item" onclick="document.getElementById('sheet-vision').close(); document.getElementById('dialog-more-scanners').showModal();">
+      <div class="ic">⋯</div>
+      <div><div class="tt">Ver todos os Scanners</div><div class="ds">Exame, geladeira e cardápio de restaurante</div></div>
+    </div>
+    <button class="btn btn-card-outline btn-block" style="margin-top:6px" onclick="document.getElementById('sheet-vision').close()">Fechar</button>
+  </div>
+</dialog>
+
+<dialog id="dialog-more-scanners">
+  <div class="dialog-inner">
+    <h3 style="margin-bottom:2px">Mais scanners</h3>
+    <p style="font-size:0.82rem;color:var(--card-ink-soft);margin-top:0">Cada um usa uma foto e a IA analisa pra você</p>
+    <div class="sheet-item" onclick="triggerVisionScan('fridge')">
+      <div class="ic">🧊</div>
+      <div><div class="tt">Escanear Geladeira</div><div class="ds">Sugestões de receita com o que você já tem</div></div>
+    </div>
+    <div class="sheet-item" onclick="triggerVisionScan('menu')">
+      <div class="ic">📋</div>
+      <div><div class="tt">Escanear Cardápio</div><div class="ds">Melhores escolhas num cardápio de restaurante</div></div>
+    </div>
+    <div class="sheet-item" onclick="triggerVisionScan('exam')">
+      <div class="ic">🧾</div>
+      <div><div class="tt">Escanear Exame</div><div class="ds">Transcreve os valores — não interpreta nem diagnostica</div></div>
+    </div>
+    <button class="btn btn-card-outline btn-block" style="margin-top:6px" onclick="document.getElementById('dialog-more-scanners').close()">Fechar</button>
+  </div>
+</dialog>
+<input type="file" id="vision-scan-input" accept="image/*" capture="environment" onchange="handleVisionScanSelected(event)" />
+
+<dialog id="dialog-scan-result">
+  <div class="dialog-inner">
+    <h3 id="scan-result-title">Resultado</h3>
+    <div id="scan-result-body"></div>
+    <button class="btn btn-card-outline btn-block" style="margin-top:14px" onclick="document.getElementById('dialog-scan-result').close()">Fechar</button>
+  </div>
+</dialog>
 
 <!-- ============ DIALOGS ============ -->
 <dialog id="dialog-manual-meal">
@@ -379,10 +586,8 @@
     <div class="field"><label>Nome</label><input id="mm-name" type="text" placeholder="Ex: Frango com arroz" /></div>
     <div class="field"><label>Tipo</label>
       <select id="mm-type">
-        <option value="breakfast">Café da manhã</option>
-        <option value="lunch">Almoço</option>
-        <option value="snack">Lanche</option>
-        <option value="dinner">Jantar</option>
+        <option value="breakfast">Café da manhã</option><option value="lunch">Almoço</option>
+        <option value="snack">Lanche</option><option value="dinner">Jantar</option>
       </select>
     </div>
     <div class="field"><label>Calorias (kcal)</label><input id="mm-cal" type="number" /></div>
@@ -390,20 +595,8 @@
     <div class="field"><label>Carboidrato (g)</label><input id="mm-carbs" type="number" /></div>
     <div class="field"><label>Gordura (g)</label><input id="mm-fats" type="number" /></div>
     <div class="dialog-actions">
-      <button class="btn btn-secondary" onclick="document.getElementById('dialog-manual-meal').close()">Cancelar</button>
+      <button class="btn btn-card-outline" onclick="document.getElementById('dialog-manual-meal').close()">Cancelar</button>
       <button class="btn btn-primary" onclick="saveManualMeal()">Salvar</button>
-    </div>
-  </div>
-</dialog>
-
-<dialog id="dialog-new-workout">
-  <div class="dialog-inner">
-    <h3>Novo treino</h3>
-    <div class="field"><label>Nome</label><input id="wk-name" type="text" placeholder="Ex: Treino de pernas" /></div>
-    <div class="field"><label>Duração (min)</label><input id="wk-duration" type="number" /></div>
-    <div class="dialog-actions">
-      <button class="btn btn-secondary" onclick="document.getElementById('dialog-new-workout').close()">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveWorkout()">Salvar</button>
     </div>
   </div>
 </dialog>
@@ -413,7 +606,7 @@
     <h3>Registrar peso</h3>
     <div class="field"><label>Peso (kg)</label><input id="wt-value" type="number" step="0.1" /></div>
     <div class="dialog-actions">
-      <button class="btn btn-secondary" onclick="document.getElementById('dialog-weight').close()">Cancelar</button>
+      <button class="btn btn-card-outline" onclick="document.getElementById('dialog-weight').close()">Cancelar</button>
       <button class="btn btn-primary" onclick="saveWeight()">Salvar</button>
     </div>
   </div>
@@ -422,43 +615,146 @@
 <dialog id="dialog-body-scan">
   <div class="dialog-inner">
     <h3>Escaneamento corporal</h3>
-    <p style="font-size:0.85rem;color:#6B7268;margin-top:-8px">
-      Tire 3 fotos: de frente, de lado e de costas. A IA é uma estimativa visual
-      e não substitui bioimpedância, exame DEXA ou avaliação profissional.
+    <p style="font-size:0.85rem;color:var(--card-ink-soft);margin-top:-8px">
+      Tire 3 fotos: de frente, de lado e de costas. É uma estimativa visual, não substitui avaliação profissional.
     </p>
-    <div class="field">
-      <label>Foto de frente</label>
-      <input id="bs-front" type="file" accept="image/*" capture="environment" style="display:block" />
-    </div>
-    <div class="field">
-      <label>Foto de lado</label>
-      <input id="bs-side" type="file" accept="image/*" capture="environment" style="display:block" />
-    </div>
-    <div class="field">
-      <label>Foto de costas</label>
-      <input id="bs-back" type="file" accept="image/*" capture="environment" style="display:block" />
-    </div>
+    <div class="field"><label>Foto de frente</label><input id="bs-front" type="file" accept="image/*" capture="environment" style="display:block" /></div>
+    <div class="field"><label>Foto de lado</label><input id="bs-side" type="file" accept="image/*" capture="environment" style="display:block" /></div>
+    <div class="field"><label>Foto de costas</label><input id="bs-back" type="file" accept="image/*" capture="environment" style="display:block" /></div>
     <div class="dialog-actions">
-      <button class="btn btn-secondary" onclick="document.getElementById('dialog-body-scan').close()">Cancelar</button>
+      <button class="btn btn-card-outline" onclick="document.getElementById('dialog-body-scan').close()">Cancelar</button>
       <button class="btn btn-primary" onclick="submitBodyScan()">Analisar</button>
     </div>
   </div>
 </dialog>
 
+<dialog id="dialog-steps">
+  <div class="dialog-inner">
+    <h3>Passos de hoje</h3>
+    <div class="field"><label>Total de passos</label><input id="steps-value" type="number" step="1" /></div>
+    <div class="dialog-actions">
+      <button class="btn btn-card-outline" onclick="document.getElementById('dialog-steps').close()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveSteps()">Salvar</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dialog-new-challenge">
+  <div class="dialog-inner">
+    <h3>Criar desafio</h3>
+    <div class="field"><label>Nome</label><input id="ch-name" type="text" placeholder="Ex: Guerra da Hidratação" /></div>
+    <div class="field"><label>Métrica</label>
+      <select id="ch-metric">
+        <option value="water">Água (litros)</option>
+        <option value="protein">Proteína (gramas)</option>
+        <option value="workouts">Treinos concluídos</option>
+      </select>
+    </div>
+    <div class="field"><label>Meta</label><input id="ch-target" type="number" placeholder="Ex: 7" /></div>
+    <div class="field"><label>Duração (dias)</label><input id="ch-days" type="number" value="7" /></div>
+    <div class="dialog-actions">
+      <button class="btn btn-card-outline" onclick="document.getElementById('dialog-new-challenge').close()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveNewChallenge()">Criar</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dialog-meal-plan">
+  <div class="dialog-inner">
+    <h3>Planejar refeição</h3>
+    <div class="field"><label>Data</label><input id="mp-date" type="date" /></div>
+    <div class="field"><label>Tipo</label>
+      <select id="mp-type">
+        <option value="breakfast">Café da manhã</option><option value="lunch">Almoço</option>
+        <option value="snack">Lanche</option><option value="dinner">Jantar</option>
+      </select>
+    </div>
+    <div class="field"><label>Nome</label><input id="mp-name" type="text" placeholder="Ex: Frango grelhado com batata doce" /></div>
+    <div class="field"><label>Calorias alvo (opcional)</label><input id="mp-cal" type="number" /></div>
+    <div class="dialog-actions">
+      <button class="btn btn-card-outline" onclick="document.getElementById('dialog-meal-plan').close()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveMealPlan()">Salvar</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dialog-expense">
+  <div class="dialog-inner">
+    <h3>Registrar gasto</h3>
+    <div class="field"><label>Valor (R$)</label><input id="exp-amount" type="number" step="0.01" /></div>
+    <div class="field"><label>Descrição</label><input id="exp-desc" type="text" placeholder="Ex: Compra do mês" /></div>
+    <div class="dialog-actions">
+      <button class="btn btn-card-outline" onclick="document.getElementById('dialog-expense').close()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveExpense()">Salvar</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dialog-accept-invite">
+  <div class="dialog-inner">
+    <h3>Vincular ao meu nutricionista</h3>
+    <p style="font-size:0.85rem;color:var(--card-ink-soft);margin-top:-6px">Digite o código de convite que seu nutricionista te passou.</p>
+    <div class="field"><label>Código</label><input id="invite-code-input" type="text" style="text-transform:uppercase" placeholder="EX: A1B2C3D4" /></div>
+    <div class="dialog-actions">
+      <button class="btn btn-card-outline" onclick="document.getElementById('dialog-accept-invite').close()">Cancelar</button>
+      <button class="btn btn-primary" onclick="submitAcceptInvite()">Vincular</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dialog-premium">
+  <div class="dialog-inner">
+    <h3 style="margin-bottom:2px">VivaLeve Premium</h3>
+    <div id="premium-dialog-body"></div>
+    <button class="btn-ghost btn-block" style="margin-top:12px" onclick="document.getElementById('dialog-premium').close()">Fechar</button>
+  </div>
+</dialog>
+
+<dialog id="dialog-chat">
+  <div class="dialog-inner" style="display:flex;flex-direction:column;height:70vh;padding-bottom:14px">
+    <h3 style="margin-bottom:10px">Coach VivaLeve</h3>
+    <div id="chat-messages" style="flex:1;overflow-y:auto;margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px">
+      <input id="chat-input" type="text" placeholder="Pergunte algo…" style="flex:1;padding:11px 14px;border-radius:20px;border:1px solid var(--line-light);background:#F7F8F9" onkeydown="if(event.key==='Enter')sendChatMessage()" />
+      <button class="btn btn-primary" style="border-radius:50%;width:44px;height:44px;padding:0" onclick="sendChatMessage()">➤</button>
+    </div>
+    <button class="btn-ghost" style="margin-top:8px" onclick="document.getElementById('dialog-chat').close()">Fechar</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
 <script>
 // ==========================================================
-// CONFIGURAÇÃO — troque pelos dados do SEU projeto Supabase
-// (Project Settings → API)
+// CONFIGURAÇÃO
 // ==========================================================
-const SUPABASE_URL = "https://SEU-PROJETO.supabase.co";
-const SUPABASE_ANON_KEY = "SUA_CHAVE_ANON_PUBLICA";
+const SUPABASE_URL = "https://mpawamfjthakwrkrsutn.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1wYXdhbWZqdGhha3dya3JzdXRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwMzk1NDksImV4cCI6MjEwNTYxNTU0OX0.xsUyXi_imjzvSGZlBhRynntIB7aSkX-HKZtexYk7TD4";
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
+let currentProfile = null;
 let mealsRealtimeChannel = null;
 let bodyScanRealtimeChannel = null;
+let feedRealtimeChannel = null;
+let visionScanRealtimeChannel = null;
+let openScanId = null;
+let pendingScanType = null;
+let nutritionDate = new Date(); // dia sendo visto na aba Nutrição/Dashboard
+
+// ---------------------------------------------------------
+// TOAST (avisos de "em breve" / feedback rápido)
+// ---------------------------------------------------------
+let toastTimer = null;
+function showToast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
 
 // ---------------------------------------------------------
 // AUTH
@@ -470,15 +766,8 @@ function toggleAuthMode(){
   signup.style.display = signup.style.display === 'none' ? 'block' : 'none';
   hideAuthError();
 }
-
-function showAuthError(message){
-  const el = document.getElementById('auth-error');
-  el.textContent = message;
-  el.style.display = 'block';
-}
-function hideAuthError(){
-  document.getElementById('auth-error').style.display = 'none';
-}
+function showAuthError(message){ const el = document.getElementById('auth-error'); el.textContent = message; el.style.display = 'block'; }
+function hideAuthError(){ document.getElementById('auth-error').style.display = 'none'; }
 
 async function handleSignup(){
   hideAuthError();
@@ -486,15 +775,10 @@ async function handleSignup(){
   const email = document.getElementById('signup-email').value.trim();
   const password = document.getElementById('signup-password').value;
   if(!email || !password){ showAuthError('Preencha e-mail e senha.'); return; }
-
-  const { error } = await db.auth.signUp({
-    email, password,
-    options: { data: { display_name: name || 'Usuário VivaLeve' } }
-  });
+  const { error } = await db.auth.signUp({ email, password, options: { data: { display_name: name || 'Usuário VivaLeve' } } });
   if(error){ showAuthError(error.message); return; }
   showAuthError('Conta criada! Verifique seu e-mail se a confirmação estiver ativada, ou já pode entrar.');
 }
-
 async function handleLogin(){
   hideAuthError();
   const email = document.getElementById('login-email').value.trim();
@@ -502,19 +786,11 @@ async function handleLogin(){
   const { error } = await db.auth.signInWithPassword({ email, password });
   if(error){ showAuthError(error.message); }
 }
-
-async function handleLogout(){
-  await db.auth.signOut();
-}
+async function handleLogout(){ await db.auth.signOut(); }
 
 db.auth.onAuthStateChange((event, session) => {
-  if(session?.user){
-    currentUser = session.user;
-    enterApp();
-  } else {
-    currentUser = null;
-    exitApp();
-  }
+  if(session?.user){ currentUser = session.user; enterApp(); }
+  else { currentUser = null; exitApp(); }
 });
 
 async function enterApp(){
@@ -522,12 +798,20 @@ async function enterApp(){
   document.getElementById('app').style.display = 'flex';
 
   const { data: profile } = await db.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
-  document.getElementById('greeting-name').textContent = (profile?.display_name || 'Usuário VivaLeve').split(' ')[0];
-  document.getElementById('stat-streak').textContent = profile?.streak_days ?? 0;
+  currentProfile = profile || {};
+  applyProfileToHeader();
+
+  document.getElementById('rest-timer-toggle').checked = currentProfile.auto_rest_timer_enabled !== false;
 
   subscribeMealsRealtime();
   subscribeBodyScanRealtime();
-  await Promise.all([loadTodayMeals(), loadTodayWater(), loadWorkouts(), loadProgress(), loadLatestBodyScan()]);
+  subscribeFeedRealtime();
+  subscribeVisionScansRealtime();
+
+  await Promise.all([
+    loadNutritionDay(), loadDashboardExtras(), loadWorkout(), loadProgress(), loadLatestBodyScan(),
+    loadLeagues(), loadChallenges(), loadFeed(), loadMealPlans(), loadGrocery(), loadNutritionistPanel()
+  ]);
 }
 
 function exitApp(){
@@ -535,6 +819,57 @@ function exitApp(){
   document.getElementById('app').style.display = 'none';
   if(mealsRealtimeChannel){ db.removeChannel(mealsRealtimeChannel); mealsRealtimeChannel = null; }
   if(bodyScanRealtimeChannel){ db.removeChannel(bodyScanRealtimeChannel); bodyScanRealtimeChannel = null; }
+  if(feedRealtimeChannel){ db.removeChannel(feedRealtimeChannel); feedRealtimeChannel = null; }
+  if(visionScanRealtimeChannel){ db.removeChannel(visionScanRealtimeChannel); visionScanRealtimeChannel = null; }
+}
+
+function applyProfileToHeader(){
+  const name = currentProfile.display_name || 'Usuário VivaLeve';
+  const first = name.split(' ')[0];
+  const initials = name.split(' ').filter(Boolean).slice(0,2).map(w => w[0].toUpperCase()).join('') || 'U';
+  document.getElementById('avatar-initials').textContent = initials;
+  document.getElementById('avatar-initials-2').textContent = initials;
+  document.getElementById('dash-greeting').textContent = `Continue firme, ${first}!`;
+  document.getElementById('progress-name').textContent = name;
+
+  const points = currentProfile.points || 0;
+  const perLevel = 500; // fórmula simples e ajustável — não é um balanceamento oficial de jogo
+  const level = Math.floor(points / perLevel) + 1;
+  const intoLevel = points % perLevel;
+  document.getElementById('progress-level').textContent = `Lvl ${level}`;
+  document.getElementById('progress-xp').textContent = `${points} pontos totais`;
+  document.getElementById('progress-xp-bar').style.width = Math.round((intoLevel / perLevel) * 100) + '%';
+
+  const isPremiumActive = currentProfile.is_premium && currentProfile.premium_expires_at && new Date(currentProfile.premium_expires_at) > new Date();
+  document.getElementById('premium-menu-label').textContent = isPremiumActive ? 'Premium ativo' : 'Desbloquear Premium';
+  document.getElementById('premium-menu-sub').textContent = isPremiumActive
+    ? `Válido até ${new Date(currentProfile.premium_expires_at).toLocaleDateString('pt-BR')}`
+    : 'Nutricionista IA, gêmeo digital e treinos ilimitados';
+}
+
+function divisionForPoints(points){
+  if(points >= 30000) return 'mestre';
+  if(points >= 15000) return 'diamante';
+  if(points >= 7000) return 'platina';
+  if(points >= 3000) return 'ouro';
+  if(points >= 1000) return 'prata';
+  return 'bronze';
+}
+
+async function awardPoints(amount){
+  const { data } = await db.from('profiles').select('points').eq('id', currentUser.id).maybeSingle();
+  const newPoints = (data?.points || 0) + amount;
+  await db.from('profiles').update({ points: newPoints }).eq('id', currentUser.id);
+  currentProfile.points = newPoints;
+  applyProfileToHeader();
+
+  // mantém a tabela pública (leaderboard_stats) em dia — é ela que alimenta Ligas e Feed
+  const { data: lb } = await db.from('leaderboard_stats').select('season_points').eq('user_id', currentUser.id).maybeSingle();
+  const newSeasonPoints = (lb?.season_points || 0) + amount;
+  await db.from('leaderboard_stats').upsert({
+    user_id: currentUser.id, display_name: currentProfile.display_name, points: newPoints,
+    season_points: newSeasonPoints, division: divisionForPoints(newPoints), updated_at: new Date().toISOString()
+  });
 }
 
 // ---------------------------------------------------------
@@ -543,22 +878,143 @@ function exitApp(){
 function showTab(name){
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.tabbar .tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
 }
+function showProgressTab(name){
+  document.querySelectorAll('.ptab-panel').forEach(p => p.style.display = (p.dataset.ptabPanel === name ? 'block' : 'none'));
+  document.querySelectorAll('[data-ptab]').forEach(b => b.classList.toggle('active', b.dataset.ptab === name));
+}
+function showNutritionTab(name){
+  document.querySelectorAll('.ntab-panel').forEach(p => p.style.display = (p.dataset.ntabPanel === name ? 'block' : 'none'));
+  document.querySelectorAll('[data-ntab]').forEach(b => b.classList.toggle('active', b.dataset.ntab === name));
+}
+function openVisionSheet(){ document.getElementById('sheet-vision').showModal(); }
+function visionScanMeal(){ document.getElementById('sheet-vision').close(); showTab('nutrition'); showNutritionTab('diario'); document.getElementById('photo-input').click(); }
+function visionScanBody(){ document.getElementById('sheet-vision').close(); showTab('progress'); showProgressTab('stats'); openBodyScanDialog(); }
 
-function startOfTodayISO(){
-  const d = new Date(); d.setHours(0,0,0,0);
-  return d.toISOString();
+function dateKeyLocal(d){
+  // yyyy-mm-dd no fuso local (evita cair no dia errado perto da meia-noite)
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
 }
+function startOfDayISO(d){ const c = new Date(d); c.setHours(0,0,0,0); return c.toISOString(); }
+function endOfDayISO(d){ const c = new Date(d); c.setHours(23,59,59,999); return c.toISOString(); }
+function isToday(d){ return dateKeyLocal(d) === dateKeyLocal(new Date()); }
 
 // ---------------------------------------------------------
-// NUTRIÇÃO — manual
+// NUTRIÇÃO — navegação por dia + macros + hidratação + refeições
+// (essas mesmas contas alimentam os cards do Dashboard)
 // ---------------------------------------------------------
+function navNutritionDay(delta){
+  const d = new Date(nutritionDate);
+  d.setDate(d.getDate() + delta);
+  if(d > new Date()) return; // não navega pro futuro
+  nutritionDate = d;
+  loadNutritionDay();
+}
+
+async function loadNutritionDay(){
+  const today = isToday(nutritionDate);
+  document.getElementById('nutrition-date-label').innerHTML =
+    (today ? 'HOJE' : nutritionDate.toLocaleDateString('pt-BR', { weekday: 'short' }).toUpperCase()) +
+    `<small>${nutritionDate.toLocaleDateString('pt-BR')}</small>`;
+  document.getElementById('nutrition-next-btn').style.visibility = today ? 'hidden' : 'visible';
+  document.getElementById('nutrition-add-row').style.display = today ? 'flex' : 'none';
+  document.getElementById('hydration-chips').style.display = today ? 'flex' : 'none';
+
+  const { data: meals } = await db.from('meals').select('*').eq('user_id', currentUser.id)
+    .gte('created_at', startOfDayISO(nutritionDate)).lte('created_at', endOfDayISO(nutritionDate))
+    .order('created_at', { ascending: false });
+  const { data: waterRows } = await db.from('water_logs').select('amount_liters').eq('user_id', currentUser.id)
+    .gte('created_at', startOfDayISO(nutritionDate)).lte('created_at', endOfDayISO(nutritionDate));
+
+  renderNutritionDay(meals || [], waterRows || []);
+  if(today){
+    renderDashboard(meals || [], waterRows || []);
+    refreshChallengeProgressFor('water');
+    refreshChallengeProgressFor('protein');
+  }
+}
+
+function macroGoals(){
+  return {
+    calorie: currentProfile.calorie_goal || 2500,
+    protein: currentProfile.protein_goal_g || 150,
+    carbs: currentProfile.carbs_goal_g || 250,
+    fat: currentProfile.fat_goal_g || 70,
+    water: currentProfile.water_goal_liters || 2.5,
+  };
+}
+
+function renderNutritionDay(meals, waterRows){
+  const goals = macroGoals();
+  const done = meals.filter(m => m.status === 'completed');
+  const totals = done.reduce((acc, m) => ({
+    cal: acc.cal + (m.calories||0), protein: acc.protein + (m.protein||0), carbs: acc.carbs + (m.carbs||0), fat: acc.fat + (m.fats||0)
+  }), { cal:0, protein:0, carbs:0, fat:0 });
+
+  document.getElementById('macro-protein-amt').textContent = `${totals.protein}g de ${goals.protein}g`;
+  document.getElementById('macro-protein-bar').style.width = Math.min(100, (totals.protein/goals.protein)*100) + '%';
+  document.getElementById('macro-carbs-amt').textContent = `${totals.carbs}g de ${goals.carbs}g`;
+  document.getElementById('macro-carbs-bar').style.width = Math.min(100, (totals.carbs/goals.carbs)*100) + '%';
+  document.getElementById('macro-fats-amt').textContent = `${totals.fat}g de ${goals.fat}g`;
+  document.getElementById('macro-fats-bar').style.width = Math.min(100, (totals.fat/goals.fat)*100) + '%';
+
+  const waterTotal = waterRows.reduce((s,r) => s + Number(r.amount_liters), 0);
+  document.getElementById('hydration-total').innerHTML = `${waterTotal.toFixed(1).replace('.',',')}<small> / ${goals.water.toFixed(1).replace('.',',')} L</small>`;
+
+  renderMealsList('nutrition-meals-list', meals);
+}
+
+function renderDashboard(meals, waterRows){
+  const goals = macroGoals();
+  const done = meals.filter(m => m.status === 'completed');
+  const totals = done.reduce((acc, m) => ({
+    cal: acc.cal + (m.calories||0), protein: acc.protein + (m.protein||0), carbs: acc.carbs + (m.carbs||0), fat: acc.fat + (m.fats||0)
+  }), { cal:0, protein:0, carbs:0, fat:0 });
+
+  document.getElementById('dash-cal-consumed').innerHTML = `${totals.cal}<small> / ${goals.calorie} kcal</small>`;
+  const pct = Math.min(100, Math.round((totals.cal/goals.calorie)*100));
+  document.getElementById('dash-cal-desc').textContent = totals.cal === 0
+    ? 'Registre uma refeição pra começar a acompanhar hoje.'
+    : `Você consumiu ${pct}% da sua meta diária.`;
+
+  const proteinKcal = totals.protein*4, carbsKcal = totals.carbs*4, fatKcal = totals.fat*9;
+  const macroKcalTotal = proteinKcal + carbsKcal + fatKcal;
+  document.getElementById('dash-carb-pct').textContent = macroKcalTotal ? Math.round((carbsKcal/macroKcalTotal)*100)+'%' : '0%';
+  document.getElementById('dash-protein-pct').textContent = macroKcalTotal ? Math.round((proteinKcal/macroKcalTotal)*100)+'%' : '0%';
+
+  const remaining = Math.max(0, goals.calorie - totals.cal);
+  const ring = document.getElementById('dash-ring');
+  const circumference = 251;
+  const remainingFraction = Math.min(1, remaining / goals.calorie);
+  ring.setAttribute('stroke-dashoffset', String(circumference * (1 - remainingFraction)));
+  document.getElementById('dash-ring-val').textContent = remaining;
+
+  renderMealsList('dashboard-meals-list', meals.slice(0,3));
+}
+
+function renderMealsList(containerId, meals){
+  const container = document.getElementById(containerId);
+  if(!meals.length){ container.innerHTML = '<div class="empty-hint on-card">Nenhuma refeição registrada.</div>'; return; }
+  container.innerHTML = meals.map(m => {
+    let pillClass = 'done', pillText = `${m.calories ?? 0} kcal`;
+    if(m.status === 'processing'){ pillClass = 'processing'; pillText = 'Analisando…'; }
+    if(m.status === 'error'){ pillClass = 'error'; pillText = 'Erro'; }
+    return `<div class="list-item">
+      <div class="meta"><span class="name">${m.name || 'Refeição'}</span>
+      <span class="sub">${mealTypeLabel(m.meal_type)}${m.ai_score ? ' · nota IA ' + m.ai_score : ''}</span></div>
+      <span class="pill ${pillClass}">${pillText}</span>
+    </div>`;
+  }).join('');
+}
+function mealTypeLabel(type){ return { breakfast:'Café da manhã', lunch:'Almoço', snack:'Lanche', dinner:'Jantar' }[type] || 'Refeição'; }
+
+// ---------- Refeição manual ----------
 function openManualMealDialog(){
   ['mm-name','mm-cal','mm-protein','mm-carbs','mm-fats'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('dialog-manual-meal').showModal();
 }
-
 async function saveManualMeal(){
   const payload = {
     user_id: currentUser.id,
@@ -572,314 +1028,864 @@ async function saveManualMeal(){
   };
   const { error } = await db.from('meals').insert(payload);
   document.getElementById('dialog-manual-meal').close();
-  if(error){ alert('Erro ao salvar: ' + error.message); return; }
-  await loadTodayMeals();
+  if(error){ showToast('Erro ao salvar: ' + error.message); return; }
+  await awardPoints(10);
+  await loadNutritionDay();
 }
 
-// ---------------------------------------------------------
-// NUTRIÇÃO — foto por IA
-// ---------------------------------------------------------
+// ---------- Refeição por foto (IA) ----------
 async function handlePhotoSelected(evt){
   const file = evt.target.files[0];
   evt.target.value = '';
   if(!file) return;
 
-  // 1. cria a linha da refeição já como "processing"
   const { data: mealRow, error: insertError } = await db.from('meals')
-    .insert({ user_id: currentUser.id, meal_type: 'snack', status: 'processing' })
-    .select().single();
+    .insert({ user_id: currentUser.id, meal_type: 'snack', status: 'processing' }).select().single();
+  if(insertError){ showToast('Erro ao iniciar análise: ' + insertError.message); return; }
+  await loadNutritionDay();
 
-  if(insertError){ alert('Erro ao iniciar análise: ' + insertError.message); return; }
-
-  await loadTodayMeals(); // já mostra o card "analisando..."
-
-  // 2. sobe a foto pro Storage, na pasta do usuário
   const path = `${currentUser.id}/${mealRow.id}.jpg`;
   const { error: uploadError } = await db.storage.from('meal-photos').upload(path, file, { upsert: true });
-
   if(uploadError){
-    await db.from('meals').update({ status: 'error', error_message: 'Falha no upload da foto.' }).eq('id', mealRow.id);
-    await loadTodayMeals();
-    return;
+    await db.from('meals').update({ status:'error', error_message:'Falha no upload da foto.' }).eq('id', mealRow.id);
+    await loadNutritionDay(); return;
   }
-
   await db.from('meals').update({ image_path: path }).eq('id', mealRow.id);
 
-  // 3. chama a Edge Function que analisa com Gemini (a tela atualiza sozinha via Realtime)
-  const { error: fnError } = await db.functions.invoke('analyze-meal-photo', {
-    body: { mealId: mealRow.id, path }
-  });
+  const { error: fnError } = await db.functions.invoke('analyze-meal-photo', { body: { mealId: mealRow.id, path } });
   if(fnError){
-    await db.from('meals').update({ status: 'error', error_message: 'Falha ao acionar a análise por IA.' }).eq('id', mealRow.id);
-    await loadTodayMeals();
+    await db.from('meals').update({ status:'error', error_message:'Falha ao acionar a análise por IA.' }).eq('id', mealRow.id);
+    await loadNutritionDay();
+  } else {
+    await awardPoints(10);
   }
 }
 
 function subscribeMealsRealtime(){
   mealsRealtimeChannel = db.channel('meals-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'meals', filter: `user_id=eq.${currentUser.id}` },
-      () => { loadTodayMeals(); })
+    .on('postgres_changes', { event:'*', schema:'public', table:'meals', filter:`user_id=eq.${currentUser.id}` }, () => loadNutritionDay())
     .subscribe();
 }
 
-async function loadTodayMeals(){
-  const { data, error } = await db.from('meals')
-    .select('*')
-    .eq('user_id', currentUser.id)
-    .gte('created_at', startOfTodayISO())
-    .order('created_at', { ascending: false });
-
-  if(error) return;
-
-  renderMealsList('nutrition-meals-list', data);
-  renderMealsList('dashboard-meals-list', data.slice(0, 3));
-
-  const totalCalories = data.filter(m => m.status === 'completed').reduce((sum, m) => sum + (m.calories || 0), 0);
-  document.getElementById('stat-calories').textContent = totalCalories;
-}
-
-function renderMealsList(containerId, meals){
-  const container = document.getElementById(containerId);
-  if(!meals.length){
-    container.innerHTML = '<div class="empty-hint">Nenhuma refeição registrada ainda hoje.</div>';
-    return;
-  }
-  container.innerHTML = meals.map(m => {
-    let pillClass = 'done', pillText = `${m.calories ?? 0} kcal`;
-    if(m.status === 'processing'){ pillClass = 'processing'; pillText = 'Analisando…'; }
-    if(m.status === 'error'){ pillClass = 'error'; pillText = 'Erro'; }
-    return `<div class="list-item">
-      <div class="meta">
-        <span class="name">${m.name || 'Refeição'}</span>
-        <span class="sub">${mealTypeLabel(m.meal_type)}${m.ai_score ? ' · nota IA ' + m.ai_score : ''}</span>
-      </div>
-      <span class="pill ${pillClass}">${pillText}</span>
-    </div>`;
-  }).join('');
-}
-
-function mealTypeLabel(type){
-  return { breakfast: 'Café da manhã', lunch: 'Almoço', snack: 'Lanche', dinner: 'Jantar' }[type] || 'Refeição';
-}
-
-// ---------------------------------------------------------
-// ÁGUA
-// ---------------------------------------------------------
+// ---------- Hidratação ----------
 async function addWater(liters){
   await db.from('water_logs').insert({ user_id: currentUser.id, amount_liters: liters });
-  await loadTodayWater();
+  await awardPoints(5);
+  await loadNutritionDay();
 }
-
-async function loadTodayWater(){
-  const { data } = await db.from('water_logs').select('amount_liters')
-    .eq('user_id', currentUser.id).gte('created_at', startOfTodayISO());
-  const total = (data || []).reduce((sum, r) => sum + Number(r.amount_liters), 0);
-  document.getElementById('stat-water').textContent = total.toFixed(1).replace('.', ',') + 'L';
+async function resetWaterToday(){
+  if(!confirm('Apagar todos os registros de água de hoje?')) return;
+  await db.from('water_logs').delete().eq('user_id', currentUser.id)
+    .gte('created_at', startOfDayISO(new Date())).lte('created_at', endOfDayISO(new Date()));
+  await loadNutritionDay();
 }
 
 // ---------------------------------------------------------
-// TREINO
+// DASHBOARD — gasto ativo (treino) + passos
 // ---------------------------------------------------------
-function openNewWorkoutDialog(){
-  document.getElementById('wk-name').value = '';
-  document.getElementById('wk-duration').value = '';
-  document.getElementById('dialog-new-workout').showModal();
-}
+async function loadDashboardExtras(){
+  const { data: workoutsToday } = await db.from('workouts').select('calories_burned,status')
+    .eq('user_id', currentUser.id).eq('status','completed')
+    .gte('completed_at', startOfDayISO(new Date())).lte('completed_at', endOfDayISO(new Date()));
+  const burn = (workoutsToday||[]).reduce((s,w) => s + (w.calories_burned||0), 0);
+  document.getElementById('dash-burn').innerHTML = `${burn}<small> kcal</small>`;
+  document.getElementById('dash-burn-goal').textContent = currentProfile.active_burn_goal || 800;
+  document.getElementById('dash-burn-bar').style.width = Math.min(100, (burn/(currentProfile.active_burn_goal||800))*100) + '%';
 
-async function saveWorkout(){
-  const name = document.getElementById('wk-name').value.trim();
-  if(!name){ return; }
-  await db.from('workouts').insert({
-    user_id: currentUser.id, name,
-    duration_minutes: Number(document.getElementById('wk-duration').value) || null
+  const { data: last7 } = await db.from('steps_logs').select('log_date,steps').eq('user_id', currentUser.id)
+    .order('log_date', { ascending: false }).limit(7);
+  const todayKey = dateKeyLocal(new Date());
+  const todaySteps = (last7||[]).find(r => r.log_date === todayKey)?.steps || 0;
+  const stepsGoal = currentProfile.steps_goal || 10000;
+  document.getElementById('dash-steps').innerHTML = `${todaySteps.toLocaleString('pt-BR')}<small> / ${(stepsGoal/1000)}\u00a0mil</small>`;
+
+  const week = [...Array(7)].map((_,i) => {
+    const d = new Date(); d.setDate(d.getDate() - (6-i));
+    const key = dateKeyLocal(d);
+    const row = (last7||[]).find(r => r.log_date === key);
+    return { key, steps: row?.steps || 0, today: key === todayKey };
   });
-  document.getElementById('dialog-new-workout').close();
-  await loadWorkouts();
+  document.getElementById('dash-steps-week').innerHTML = week.map(w =>
+    `<div class="col ${w.today?'today':''}" style="height:${Math.max(6, Math.min(100,(w.steps/stepsGoal)*100))}%"></div>`
+  ).join('');
 }
 
-async function loadWorkouts(){
-  const { data } = await db.from('workouts').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-  const container = document.getElementById('workout-list');
-  if(!data || !data.length){
-    container.innerHTML = '<div class="empty-hint">Nenhum treino cadastrado ainda.</div>';
+function openStepsDialog(){
+  document.getElementById('steps-value').value = '';
+  document.getElementById('dialog-steps').showModal();
+}
+async function saveSteps(){
+  const steps = Number(document.getElementById('steps-value').value) || 0;
+  await db.from('steps_logs').upsert({ user_id: currentUser.id, log_date: dateKeyLocal(new Date()), steps }, { onConflict: 'user_id,log_date' });
+  document.getElementById('dialog-steps').close();
+  await loadDashboardExtras();
+}
+
+// ---------------------------------------------------------
+// TREINO — plano gerado por IA
+// ---------------------------------------------------------
+async function loadWorkout(){
+  const { data } = await db.from('workouts').select('*').eq('user_id', currentUser.id)
+    .gte('created_at', startOfDayISO(new Date())).lte('created_at', endOfDayISO(new Date()))
+    .order('created_at', { ascending: false }).limit(1).maybeSingle();
+  renderWorkout(data);
+}
+
+function renderWorkout(workout){
+  const card = document.getElementById('workout-plan-card');
+  const banner = document.getElementById('coach-banner-wrap');
+  const list = document.getElementById('exercise-list');
+
+  if(!workout){
+    card.innerHTML = `<div class="empty-hint on-card" style="margin-bottom:12px">Nenhum treino gerado hoje ainda.</div>
+      <button class="btn btn-primary btn-block" onclick="generateWorkout()">✦ Gerar treino com IA</button>`;
+    banner.innerHTML = '';
+    list.innerHTML = '<div class="empty-hint">Gere um treino pra ver os exercícios aqui.</div>';
     return;
   }
-  container.innerHTML = data.map(w => `
-    <div class="list-item">
-      <div class="meta">
-        <span class="name">${w.name}</span>
-        <span class="sub">${w.duration_minutes ? w.duration_minutes + ' min' : ''}</span>
+
+  banner.innerHTML = workout.coach_tip
+    ? `<div class="coach-banner">🤖 <div><strong>Recomendação do Coach Vision IA</strong><br>${workout.coach_tip}</div></div>` : '';
+
+  card.innerHTML = `
+    <span class="pill done" style="margin-bottom:10px;display:inline-block">PLANO DE HOJE</span>
+    <span style="float:right;color:var(--card-ink-soft);font-size:0.82rem">⏱ ${workout.duration_minutes || '—'} min</span>
+    <h3 style="margin:6px 0 14px">${workout.name}</h3>
+    <div class="dialog-actions" style="margin-top:0">
+      ${workout.status === 'completed'
+        ? '<span class="pill done" style="flex:1;text-align:center;padding:12px">Concluído ✓</span>'
+        : `<button class="btn btn-primary" style="flex:1" onclick="completeWorkout('${workout.id}')">▶ Iniciar Treino</button>`}
+      <button class="btn btn-card-outline" style="flex:1" onclick="generateWorkout('${workout.id}')">✦ Mudar com IA</button>
+    </div>
+  `;
+
+  const exercises = workout.exercises || [];
+  list.innerHTML = !exercises.length ? '<div class="empty-hint">Sem exercícios detalhados.</div>' : exercises.map(ex => `
+    <div class="exercise-card">
+      <div class="thumb">🏋️</div>
+      <div class="info">
+        <div class="name">${ex.name}</div>
+        <div class="desc">${ex.instructions || ''}</div>
+        <div class="meta">${ex.sets} séries · ${ex.reps} · Rest ${ex.restSeconds}s</div>
       </div>
-      ${w.status === 'completed'
-        ? '<span class="pill done">Concluído</span>'
-        : `<button class="btn btn-secondary" style="width:auto;padding:8px 14px" onclick="completeWorkout('${w.id}')">Concluir</button>`}
     </div>`).join('');
 }
 
+async function generateWorkout(workoutId){
+  const card = document.getElementById('workout-plan-card');
+  card.innerHTML = '<div class="empty-hint on-card">Gerando treino com IA…</div>';
+  const { data, error } = await db.functions.invoke('generate-workout-plan', { body: workoutId ? { workoutId } : {} });
+  if(error){ showToast('Erro ao gerar treino: ' + error.message); await loadWorkout(); return; }
+  if(data?.coachTip && data?.workout?.id){ await db.from('workouts').update({ coach_tip: data.coachTip }).eq('id', data.workout.id); }
+  await loadWorkout();
+}
+
 async function completeWorkout(id){
-  await db.from('workouts').update({ status: 'completed', completed_at: new Date().toISOString() }).eq('id', id);
-  await loadWorkouts();
+  await db.from('workouts').update({ status:'completed', completed_at: new Date().toISOString() }).eq('id', id);
+  await awardPoints(30);
+  await loadWorkout();
+  await loadDashboardExtras();
+  await refreshChallengeProgressFor('workouts');
+}
+
+async function toggleRestTimer(enabled){
+  currentProfile.auto_rest_timer_enabled = enabled;
+  await db.from('profiles').update({ auto_rest_timer_enabled: enabled }).eq('id', currentUser.id);
 }
 
 // ---------------------------------------------------------
-// PROGRESSO
+// PROGRESSO — peso + escaneamento corporal
 // ---------------------------------------------------------
-function openWeightDialog(){
-  document.getElementById('wt-value').value = '';
-  document.getElementById('dialog-weight').showModal();
-}
-
+function openWeightDialog(){ document.getElementById('wt-value').value = ''; document.getElementById('dialog-weight').showModal(); }
 async function saveWeight(){
   const value = Number(document.getElementById('wt-value').value);
   if(!value) return;
   await db.from('progress_logs').insert({ user_id: currentUser.id, weight_kg: value });
   await db.from('profiles').update({ weight_kg: value }).eq('id', currentUser.id);
+  await awardPoints(15);
   document.getElementById('dialog-weight').close();
   await loadProgress();
 }
-
 async function loadProgress(){
   const { data } = await db.from('progress_logs').select('*').eq('user_id', currentUser.id).order('recorded_at', { ascending: true });
   const container = document.getElementById('progress-list');
-  // Escaneamento corporal também grava em progress_logs (só gordura/massa magra,
-  // sem peso) — aqui filtramos pra essa lista/gráfico mostrarem só peso.
   const weightEntries = (data || []).filter(p => p.weight_kg != null);
   if(!weightEntries.length){
-    container.innerHTML = '<div class="empty-hint">Nenhum registro de peso ainda.</div>';
-    document.getElementById('weight-chart').innerHTML = '';
-    return;
+    container.innerHTML = '<div class="empty-hint on-card">Nenhum registro de peso ainda.</div>';
+    document.getElementById('weight-chart').innerHTML = ''; return;
   }
   container.innerHTML = weightEntries.slice().reverse().map(p => `
-    <div class="list-item">
-      <div class="meta">
-        <span class="name">${Number(p.weight_kg).toFixed(1)} kg</span>
-        <span class="sub">${new Date(p.recorded_at).toLocaleDateString('pt-BR')}</span>
-      </div>
-    </div>`).join('');
+    <div class="list-item"><div class="meta"><span class="name">${Number(p.weight_kg).toFixed(1)} kg</span>
+    <span class="sub">${new Date(p.recorded_at).toLocaleDateString('pt-BR')}</span></div></div>`).join('');
   drawWeightChart(weightEntries);
 }
-
 function drawWeightChart(data){
   const svg = document.getElementById('weight-chart');
   const weights = data.map(d => Number(d.weight_kg));
   const min = Math.min(...weights), max = Math.max(...weights);
-  const range = (max - min) || 1;
-  const w = 300, h = 140, pad = 10;
-
-  const points = weights.map((val, i) => {
-    const x = pad + (i / Math.max(weights.length - 1, 1)) * (w - pad * 2);
-    const y = h - pad - ((val - min) / range) * (h - pad * 2);
-    return `${x},${y}`;
-  }).join(' ');
-
-  svg.innerHTML = `
-    <polyline points="${points}" fill="none" stroke="#2F5233" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
-    ${weights.map((val, i) => {
-      const x = pad + (i / Math.max(weights.length - 1, 1)) * (w - pad * 2);
-      const y = h - pad - ((val - min) / range) * (h - pad * 2);
-      return `<circle cx="${x}" cy="${y}" r="3.5" fill="#E8A33D" />`;
-    }).join('')}
-  `;
+  const range = (max-min) || 1, w=300, h=130, pad=10;
+  const pt = (val,i) => {
+    const x = pad + (i/Math.max(weights.length-1,1))*(w-pad*2);
+    const y = h-pad-((val-min)/range)*(h-pad*2);
+    return {x,y};
+  };
+  const points = weights.map((v,i)=>{const p=pt(v,i);return `${p.x},${p.y}`}).join(' ');
+  svg.innerHTML = `<polyline points="${points}" fill="none" stroke="#31D48D" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+    ${weights.map((v,i)=>{const p=pt(v,i);return `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="#20B279" />`}).join('')}`;
 }
 
-// ---------------------------------------------------------
-// ESCANEAMENTO CORPORAL (Fase 2)
-// ---------------------------------------------------------
 function openBodyScanDialog(){
   ['bs-front','bs-side','bs-back'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('dialog-body-scan').showModal();
 }
-
 async function submitBodyScan(){
   const frontFile = document.getElementById('bs-front').files[0];
   const sideFile = document.getElementById('bs-side').files[0];
   const backFile = document.getElementById('bs-back').files[0];
-
-  if(!frontFile || !sideFile || !backFile){
-    alert('Envie as 3 fotos (frente, lado e costas) antes de analisar.');
-    return;
-  }
-
+  if(!frontFile || !sideFile || !backFile){ showToast('Envie as 3 fotos antes de analisar.'); return; }
   document.getElementById('dialog-body-scan').close();
 
-  // 1. cria a linha do escaneamento já como "processing"
   const { data: scanRow, error: insertError } = await db.from('body_scans')
-    .insert({ user_id: currentUser.id, status: 'processing' })
-    .select().single();
+    .insert({ user_id: currentUser.id, status:'processing' }).select().single();
+  if(insertError){ showToast('Erro ao iniciar escaneamento: ' + insertError.message); return; }
+  renderBodyScan(scanRow);
 
-  if(insertError){ alert('Erro ao iniciar escaneamento: ' + insertError.message); return; }
-
-  renderBodyScan(scanRow); // já mostra "analisando..."
-
-  // 2. sobe as 3 fotos, cada uma na pasta do usuário
   const frontPath = `${currentUser.id}/${scanRow.id}_front.jpg`;
   const sidePath = `${currentUser.id}/${scanRow.id}_side.jpg`;
   const backPath = `${currentUser.id}/${scanRow.id}_back.jpg`;
-
   const uploads = await Promise.all([
     db.storage.from('body-scans').upload(frontPath, frontFile, { upsert: true }),
     db.storage.from('body-scans').upload(sidePath, sideFile, { upsert: true }),
     db.storage.from('body-scans').upload(backPath, backFile, { upsert: true }),
   ]);
-
   const uploadError = uploads.find(u => u.error)?.error;
   if(uploadError){
-    await db.from('body_scans').update({ status: 'error', error_message: 'Falha no upload das fotos.' }).eq('id', scanRow.id);
-    await loadLatestBodyScan();
-    return;
+    await db.from('body_scans').update({ status:'error', error_message:'Falha no upload das fotos.' }).eq('id', scanRow.id);
+    await loadLatestBodyScan(); return;
   }
-
   await db.from('body_scans').update({ front_path: frontPath, side_path: sidePath, back_path: backPath }).eq('id', scanRow.id);
 
-  // 3. chama a Edge Function que analisa com Gemini (a tela atualiza sozinha via Realtime)
-  const { error: fnError } = await db.functions.invoke('analyze-body-scan', {
-    body: { scanId: scanRow.id, frontPath, sidePath, backPath }
-  });
+  const { error: fnError } = await db.functions.invoke('analyze-body-scan', { body: { scanId: scanRow.id, frontPath, sidePath, backPath } });
   if(fnError){
-    await db.from('body_scans').update({ status: 'error', error_message: 'Falha ao acionar a análise por IA.' }).eq('id', scanRow.id);
+    await db.from('body_scans').update({ status:'error', error_message:'Falha ao acionar a análise por IA.' }).eq('id', scanRow.id);
     await loadLatestBodyScan();
+  } else {
+    await awardPoints(20);
   }
 }
-
 function subscribeBodyScanRealtime(){
   bodyScanRealtimeChannel = db.channel('body-scans-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'body_scans', filter: `user_id=eq.${currentUser.id}` },
-      () => { loadLatestBodyScan(); })
+    .on('postgres_changes', { event:'*', schema:'public', table:'body_scans', filter:`user_id=eq.${currentUser.id}` }, () => loadLatestBodyScan())
     .subscribe();
 }
-
 async function loadLatestBodyScan(){
-  const { data } = await db.from('body_scans')
-    .select('*').eq('user_id', currentUser.id)
-    .order('created_at', { ascending: false }).limit(1).maybeSingle();
+  const { data } = await db.from('body_scans').select('*').eq('user_id', currentUser.id)
+    .order('created_at', { ascending:false }).limit(1).maybeSingle();
   renderBodyScan(data);
 }
-
 function renderBodyScan(scan){
   const container = document.getElementById('body-scan-result');
-  if(!scan){
-    container.innerHTML = '<div class="empty-hint">Nenhum escaneamento corporal ainda.</div>';
-    return;
-  }
+  if(!scan){ container.innerHTML = '<div class="empty-hint on-card">Nenhum escaneamento corporal ainda.</div>'; return; }
   if(scan.status === 'processing'){
     container.innerHTML = '<div class="list-item"><div class="meta"><span class="name">Analisando suas fotos…</span><span class="sub">Isso leva alguns segundos</span></div><span class="pill processing">Processando</span></div>';
     return;
   }
   if(scan.status === 'error'){
-    container.innerHTML = `<div class="list-item"><div class="meta"><span class="name">Não deu certo</span><span class="sub">${scan.error_message || ''}</span></div><span class="pill error">Erro</span></div>`;
+    container.innerHTML = `<div class="list-item"><div class="meta"><span class="name">Não deu certo</span><span class="sub">${scan.error_message||''}</span></div><span class="pill error">Erro</span></div>`;
     return;
   }
   container.innerHTML = `
-    <div class="stat-row">
-      <div class="stat"><div class="value">${Number(scan.body_fat_estimate_percent).toFixed(1)}%</div><div class="label">gordura (estim.)</div></div>
-      <div class="stat"><div class="value">${Number(scan.muscle_mass_estimate_percent).toFixed(1)}%</div><div class="label">massa magra (estim.)</div></div>
+    <div class="stat-row" style="margin-bottom:10px">
+      <div class="stat-card"><div class="head">GORDURA (estim.)</div><div class="val">${Number(scan.body_fat_estimate_percent).toFixed(1)}%</div></div>
+      <div class="stat-card"><div class="head">MASSA MAGRA (estim.)</div><div class="val">${Number(scan.muscle_mass_estimate_percent).toFixed(1)}%</div></div>
     </div>
-    <p style="font-size:0.85rem;line-height:1.5;margin:4px 0"><strong>Postura:</strong> ${scan.posture_assessment || '—'}</p>
-    <p style="font-size:0.85rem;line-height:1.5;margin:4px 0"><strong>Simetria:</strong> ${scan.symmetry_notes || '—'}</p>
-    <p style="font-size:0.85rem;line-height:1.5;margin:8px 0 0">${scan.overall_analysis || ''}</p>
+    <p style="font-size:0.85rem;line-height:1.5;margin:4px 0"><strong>Postura:</strong> ${scan.posture_assessment||'—'}</p>
+    <p style="font-size:0.85rem;line-height:1.5;margin:4px 0"><strong>Simetria:</strong> ${scan.symmetry_notes||'—'}</p>
+    <p style="font-size:0.85rem;line-height:1.5;margin:8px 0 0">${scan.overall_analysis||''}</p>
   `;
 }
-</script>
 
+// ---------------------------------------------------------
+// LIGAS
+// ---------------------------------------------------------
+const DIVISION_LABELS = { bronze:'Bronze', prata:'Prata', ouro:'Ouro', platina:'Platina', diamante:'Diamante', mestre:'Mestre' };
+const DIVISION_ORDER = ['bronze','prata','ouro','platina','diamante','mestre'];
+
+async function loadLeagues(){
+  const { data: mine } = await db.from('leaderboard_stats').select('*').eq('user_id', currentUser.id).maybeSingle();
+  const { data: season } = await db.from('season_state').select('*').eq('id', 1).maybeSingle();
+  const division = mine?.division || 'bronze';
+  const { data: board } = await db.from('leaderboard_stats').select('*').eq('division', division)
+    .order('season_points', { ascending: false }).limit(30);
+  renderLeagues(mine, season, division, board || []);
+}
+
+function renderLeagues(mine, season, division, board){
+  document.getElementById('league-division-pills').innerHTML = DIVISION_ORDER.map(d =>
+    `<span class="pill ${d===division?'done':''}" style="flex-shrink:0">${DIVISION_LABELS[d]}</span>`).join('');
+
+  const rank = board.findIndex(b => b.user_id === currentUser.id) + 1;
+  document.getElementById('league-title').textContent = `Liga ${DIVISION_LABELS[division]}`;
+  document.getElementById('league-rank').textContent = rank ? `#${rank}` : '—';
+
+  const daysLeft = season ? Math.max(0, Math.ceil((new Date(season.ends_at) - new Date()) / 86400000)) : '—';
+  document.getElementById('league-days-left').textContent = `Termina em ${daysLeft} dias`;
+
+  const promoZone = rank && rank <= Math.max(1, Math.ceil(board.length * 0.3));
+  const nextDivision = DIVISION_ORDER[DIVISION_ORDER.indexOf(division) + 1];
+  document.getElementById('league-promo-note').textContent = promoZone && nextDivision
+    ? `Zona de promoção! Continue consistente para subir para a Liga ${DIVISION_LABELS[nextDivision]}.`
+    : `Grupo de ${board.length} atleta${board.length===1?'':'s'} nesta divisão.`;
+
+  const container = document.getElementById('league-board');
+  if(!board.length){ container.innerHTML = '<div class="empty-hint on-card">Ninguém nesta divisão ainda.</div>'; return; }
+  container.innerHTML = board.map((b, i) => `
+    <div class="list-item">
+      <div class="meta"><span class="name">#${i+1} ${b.display_name || 'Atleta'}${b.user_id===currentUser.id?' (Você)':''}</span></div>
+      <span class="pill done">${b.season_points} XP</span>
+    </div>`).join('');
+}
+
+// ---------------------------------------------------------
+// DESAFIOS
+// ---------------------------------------------------------
+function metricUnit(type){ return { water:'L', protein:'g', workouts:'treinos' }[type] || ''; }
+function metricLabel(type){ return { water:'Água', protein:'Proteína', workouts:'Treinos' }[type] || type; }
+
+async function loadChallenges(){
+  const { data: challenges } = await db.from('challenges').select('*').gt('ends_at', new Date().toISOString()).order('ends_at', { ascending: true });
+  const { data: myParticipations } = await db.from('challenge_participants').select('challenge_id').eq('user_id', currentUser.id);
+  const joinedIds = new Set((myParticipations || []).map(p => p.challenge_id));
+  await renderChallenges(challenges || [], joinedIds);
+}
+
+async function renderChallenges(challenges, joinedIds){
+  const container = document.getElementById('challenges-list');
+  if(!challenges.length){ container.innerHTML = '<div class="empty-hint">Nenhum desafio ativo. Crie o primeiro!</div>'; return; }
+
+  const cards = await Promise.all(challenges.map(async (ch) => {
+    const joined = joinedIds.has(ch.id);
+    let boardHtml = '';
+    if(joined){
+      const { data: progress } = await db.from('challenge_progress').select('user_id,progress_value')
+        .eq('challenge_id', ch.id).order('progress_value', { ascending: false }).limit(10);
+      const userIds = (progress || []).map(p => p.user_id);
+      const { data: names } = await db.from('leaderboard_stats').select('user_id,display_name')
+        .in('user_id', userIds.length ? userIds : ['00000000-0000-0000-0000-000000000000']);
+      const nameMap = Object.fromEntries((names || []).map(n => [n.user_id, n.display_name]));
+      boardHtml = (progress || []).map(p => `
+        <div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:3px">
+            <span>${nameMap[p.user_id] || 'Atleta'}${p.user_id===currentUser.id?' (Você)':''}</span>
+            <span>${Number(p.progress_value).toFixed(1)} / ${ch.target} ${metricUnit(ch.metric_type)}</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,(p.progress_value/ch.target)*100)}%"></div></div>
+        </div>`).join('');
+    }
+    const daysLeft = Math.max(0, Math.ceil((new Date(ch.ends_at) - new Date()) / 86400000));
+    return `<div class="card">
+      ${ch.is_official ? '<span class="pill done" style="margin-bottom:6px;display:inline-block">OFICIAL</span>' : ''}
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <h3 style="margin:4px 0">${ch.name}</h3><span class="pill">+${ch.points_reward} XP</span>
+      </div>
+      <div style="font-size:0.78rem;color:var(--card-ink-soft);margin-bottom:10px">${daysLeft}d restantes · meta ${ch.target} ${metricUnit(ch.metric_type)} de ${metricLabel(ch.metric_type)}</div>
+      ${boardHtml}
+      ${!joined ? `<button class="btn btn-primary btn-block" style="margin-top:6px" onclick="joinChallenge('${ch.id}')">Participar</button>` : ''}
+    </div>`;
+  }));
+  container.innerHTML = cards.join('');
+}
+
+function openNewChallengeDialog(){
+  document.getElementById('ch-name').value = '';
+  document.getElementById('ch-target').value = '';
+  document.getElementById('ch-days').value = '7';
+  document.getElementById('dialog-new-challenge').showModal();
+}
+async function saveNewChallenge(){
+  const name = document.getElementById('ch-name').value.trim();
+  const target = Number(document.getElementById('ch-target').value);
+  const days = Number(document.getElementById('ch-days').value) || 7;
+  if(!name || !target){ showToast('Preencha nome e meta.'); return; }
+  const endsAt = new Date(); endsAt.setDate(endsAt.getDate() + days);
+  const { data: ch, error } = await db.from('challenges').insert({
+    creator_id: currentUser.id, name, metric_type: document.getElementById('ch-metric').value,
+    target, ends_at: endsAt.toISOString()
+  }).select().single();
+  document.getElementById('dialog-new-challenge').close();
+  if(error){ showToast('Erro: ' + error.message); return; }
+  await db.from('challenge_participants').insert({ challenge_id: ch.id, user_id: currentUser.id });
+  await db.from('challenge_progress').insert({ challenge_id: ch.id, user_id: currentUser.id, progress_value: 0 });
+  await loadChallenges();
+}
+async function joinChallenge(id){
+  await db.from('challenge_participants').insert({ challenge_id: id, user_id: currentUser.id });
+  await db.from('challenge_progress').insert({ challenge_id: id, user_id: currentUser.id, progress_value: 0 });
+  await loadChallenges();
+}
+
+async function refreshChallengeProgressFor(metricType){
+  const { data: parts } = await db.from('challenge_participants').select('challenge_id').eq('user_id', currentUser.id);
+  if(!parts || !parts.length) return;
+  const challengeIds = parts.map(p => p.challenge_id);
+  const { data: challenges } = await db.from('challenges').select('*').in('id', challengeIds)
+    .eq('metric_type', metricType).gt('ends_at', new Date().toISOString());
+  for(const ch of (challenges || [])){
+    let value = 0;
+    if(metricType === 'water'){
+      const { data: rows } = await db.from('water_logs').select('amount_liters').eq('user_id', currentUser.id).gte('created_at', ch.created_at);
+      value = (rows || []).reduce((s,r) => s + Number(r.amount_liters), 0);
+    } else if(metricType === 'protein'){
+      const { data: rows } = await db.from('meals').select('protein').eq('user_id', currentUser.id).eq('status','completed').gte('created_at', ch.created_at);
+      value = (rows || []).reduce((s,r) => s + (r.protein || 0), 0);
+    } else if(metricType === 'workouts'){
+      const { count } = await db.from('workouts').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id).eq('status','completed').gte('completed_at', ch.created_at);
+      value = count || 0;
+    }
+    await db.from('challenge_progress').upsert({ challenge_id: ch.id, user_id: currentUser.id, progress_value: value, updated_at: new Date().toISOString() });
+  }
+}
+
+// ---------------------------------------------------------
+// FEED SOCIAL
+// ---------------------------------------------------------
+function subscribeFeedRealtime(){
+  feedRealtimeChannel = db.channel('feed-changes')
+    .on('postgres_changes', { event:'*', schema:'public', table:'posts' }, () => loadFeed())
+    .on('postgres_changes', { event:'*', schema:'public', table:'post_likes' }, () => loadFeed())
+    .on('postgres_changes', { event:'*', schema:'public', table:'post_comments' }, () => loadFeed())
+    .subscribe();
+}
+
+async function loadFeed(){
+  const { data: posts } = await db.from('posts').select('*').order('created_at', { ascending:false }).limit(20);
+  const list = posts || [];
+  const userIds = [...new Set(list.map(p => p.user_id))];
+  const postIds = list.map(p => p.id);
+  const safeIds = (arr) => arr.length ? arr : ['00000000-0000-0000-0000-000000000000'];
+
+  const [{ data: names }, { data: likes }, { data: comments }] = await Promise.all([
+    db.from('leaderboard_stats').select('user_id,display_name').in('user_id', safeIds(userIds)),
+    db.from('post_likes').select('post_id,user_id').in('post_id', safeIds(postIds)),
+    db.from('post_comments').select('post_id,user_id,content,created_at').in('post_id', safeIds(postIds)),
+  ]);
+  const nameMap = Object.fromEntries((names || []).map(n => [n.user_id, n.display_name]));
+
+  const withUrls = await Promise.all(list.map(async (p) => {
+    let imageUrl = null;
+    if(p.image_path){
+      const { data } = await db.storage.from('feed-photos').createSignedUrl(p.image_path, 3600);
+      imageUrl = data?.signedUrl || null;
+    }
+    return { ...p, imageUrl };
+  }));
+
+  renderFeed(withUrls, nameMap, likes || [], comments || []);
+}
+
+function renderFeed(posts, nameMap, likes, comments){
+  const container = document.getElementById('feed-list');
+  if(!posts.length){ container.innerHTML = '<div class="empty-hint">Nenhum post ainda. Compartilhe algo!</div>'; return; }
+  container.innerHTML = posts.map(p => {
+    const postLikes = likes.filter(l => l.post_id === p.id);
+    const iLiked = postLikes.some(l => l.user_id === currentUser.id);
+    const postComments = comments.filter(c => c.post_id === p.id);
+    return `<div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="avatar" style="width:34px;height:34px;font-size:0.8rem">${(nameMap[p.user_id]||'U').slice(0,1).toUpperCase()}</div>
+        <div><div style="font-weight:700;font-size:0.88rem">${nameMap[p.user_id] || 'Atleta'}</div>
+        <div style="font-size:0.72rem;color:var(--card-ink-soft)">${timeAgo(p.created_at)}</div></div>
+      </div>
+      ${p.content ? `<p style="font-size:0.86rem;line-height:1.5;margin:6px 0">${p.content}</p>` : ''}
+      ${p.imageUrl ? `<img src="${p.imageUrl}" style="width:100%;border-radius:12px;margin:8px 0;display:block" />` : ''}
+      <div style="display:flex;gap:16px;margin-top:8px;font-size:0.82rem;color:var(--card-ink-soft)">
+        <span style="cursor:pointer;${iLiked?'color:var(--danger);font-weight:700':''}" onclick="toggleLike('${p.id}', ${iLiked})">♥ ${postLikes.length} curtida${postLikes.length===1?'':'s'}</span>
+        <span style="cursor:pointer" onclick="addComment('${p.id}')">💬 ${postComments.length} comentário${postComments.length===1?'':'s'}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function timeAgo(iso){
+  const diffMin = Math.round((Date.now() - new Date(iso)) / 60000);
+  if(diffMin < 1) return 'agora';
+  if(diffMin < 60) return `há ${diffMin} min`;
+  const diffH = Math.round(diffMin/60);
+  if(diffH < 24) return `há ${diffH}h`;
+  return `há ${Math.round(diffH/24)}d`;
+}
+
+async function submitPost(){
+  const content = document.getElementById('post-content').value.trim();
+  const file = document.getElementById('post-photo').files[0];
+  if(!content && !file){ showToast('Escreva algo ou adicione uma foto.'); return; }
+  const { data: postRow, error } = await db.from('posts').insert({ user_id: currentUser.id, content }).select().single();
+  if(error){ showToast('Erro ao postar: ' + error.message); return; }
+  if(file){
+    const path = `${currentUser.id}/${postRow.id}.jpg`;
+    await db.storage.from('feed-photos').upload(path, file, { upsert: true });
+    await db.from('posts').update({ image_path: path }).eq('id', postRow.id);
+  }
+  document.getElementById('post-content').value = '';
+  document.getElementById('post-photo').value = '';
+  await awardPoints(5);
+  await loadFeed();
+}
+async function toggleLike(postId, alreadyLiked){
+  if(alreadyLiked){ await db.from('post_likes').delete().eq('post_id', postId).eq('user_id', currentUser.id); }
+  else { await db.from('post_likes').insert({ post_id: postId, user_id: currentUser.id }); }
+}
+async function addComment(postId){
+  const content = prompt('Seu comentário:');
+  if(!content || !content.trim()) return;
+  await db.from('post_comments').insert({ post_id: postId, user_id: currentUser.id, content: content.trim() });
+}
+
+// ---------------------------------------------------------
+// CARDÁPIO (planejamento de refeições)
+// ---------------------------------------------------------
+async function loadMealPlans(){
+  const in7 = new Date(); in7.setDate(in7.getDate() + 7);
+  const { data } = await db.from('meal_plans').select('*').eq('user_id', currentUser.id)
+    .gte('planned_date', dateKeyLocal(new Date())).lte('planned_date', dateKeyLocal(in7))
+    .order('planned_date', { ascending: true });
+  renderMealPlans(data || []);
+}
+function renderMealPlans(plans){
+  const container = document.getElementById('menu-list');
+  if(!plans.length){ container.innerHTML = '<div class="empty-hint on-card">Nenhuma refeição planejada pros próximos 7 dias.</div>'; return; }
+  const byDate = {};
+  plans.forEach(p => { (byDate[p.planned_date] = byDate[p.planned_date] || []).push(p); });
+  container.innerHTML = Object.entries(byDate).map(([date, items]) => `
+    <div class="card">
+      <div style="font-weight:700;font-size:0.85rem;margin-bottom:8px;text-transform:capitalize">${new Date(date+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit'})}</div>
+      ${items.map(i => `<div class="list-item"><div class="meta"><span class="name">${i.name}</span><span class="sub">${mealTypeLabel(i.meal_type)}${i.target_calories?' · '+i.target_calories+' kcal':''}</span></div>
+      <button class="btn-ghost" onclick="deleteMealPlan('${i.id}')">Remover</button></div>`).join('')}
+    </div>`).join('');
+}
+function openMealPlanDialog(){
+  document.getElementById('mp-date').value = dateKeyLocal(new Date());
+  document.getElementById('mp-name').value = '';
+  document.getElementById('mp-cal').value = '';
+  document.getElementById('dialog-meal-plan').showModal();
+}
+async function saveMealPlan(){
+  const name = document.getElementById('mp-name').value.trim();
+  if(!name){ showToast('Dê um nome pra refeição.'); return; }
+  await db.from('meal_plans').insert({
+    user_id: currentUser.id, planned_date: document.getElementById('mp-date').value,
+    meal_type: document.getElementById('mp-type').value, name,
+    target_calories: Number(document.getElementById('mp-cal').value) || null
+  });
+  document.getElementById('dialog-meal-plan').close();
+  await loadMealPlans();
+}
+async function deleteMealPlan(id){ await db.from('meal_plans').delete().eq('id', id); await loadMealPlans(); }
+
+// ---------------------------------------------------------
+// COMPRAS & FINANÇAS
+// ---------------------------------------------------------
+function firstDayOfMonthKey(){ const d = new Date(); d.setDate(1); return dateKeyLocal(d); }
+
+async function loadGrocery(){
+  const [{ data: items }, { data: expenses }] = await Promise.all([
+    db.from('grocery_items').select('*').eq('user_id', currentUser.id).order('created_at', { ascending:true }),
+    db.from('grocery_expenses').select('amount').eq('user_id', currentUser.id).gte('spent_at', firstDayOfMonthKey()),
+  ]);
+  renderGrocery(items || [], expenses || []);
+}
+function renderGrocery(items, expenses){
+  const spent = expenses.reduce((s,e) => s + Number(e.amount), 0);
+  const budget = currentProfile.grocery_budget_monthly || 600;
+  document.getElementById('grocery-budget-summary').innerHTML = `R$ ${spent.toFixed(2)}<small> de R$ ${Number(budget).toFixed(2)} este mês</small>`;
+  document.getElementById('grocery-budget-bar').style.width = Math.min(100, (spent/budget)*100) + '%';
+
+  const container = document.getElementById('grocery-items-list');
+  if(!items.length){ container.innerHTML = '<div class="empty-hint on-card">Lista vazia.</div>'; return; }
+  container.innerHTML = items.map(i => `
+    <div class="list-item">
+      <div class="meta" style="flex-direction:row;align-items:center;gap:10px">
+        <input type="checkbox" ${i.checked?'checked':''} onchange="toggleGroceryItem('${i.id}', this.checked)" style="width:18px;height:18px" />
+        <span class="name" style="${i.checked?'text-decoration:line-through;color:var(--card-ink-soft)':''}">${i.name}${i.quantity?' · '+i.quantity:''}</span>
+      </div>
+      <button class="btn-ghost" onclick="deleteGroceryItem('${i.id}')">×</button>
+    </div>`).join('');
+}
+async function toggleGroceryItem(id, checked){ await db.from('grocery_items').update({ checked }).eq('id', id); await loadGrocery(); }
+async function deleteGroceryItem(id){ await db.from('grocery_items').delete().eq('id', id); await loadGrocery(); }
+async function addGroceryItem(){
+  const name = document.getElementById('grocery-new-name').value.trim();
+  if(!name) return;
+  await db.from('grocery_items').insert({ user_id: currentUser.id, name, quantity: document.getElementById('grocery-new-qty').value.trim() || null });
+  document.getElementById('grocery-new-name').value = '';
+  document.getElementById('grocery-new-qty').value = '';
+  await loadGrocery();
+}
+function openExpenseDialog(){
+  document.getElementById('exp-amount').value = '';
+  document.getElementById('exp-desc').value = '';
+  document.getElementById('dialog-expense').showModal();
+}
+async function saveExpense(){
+  const amount = Number(document.getElementById('exp-amount').value);
+  if(!amount){ showToast('Informe um valor.'); return; }
+  await db.from('grocery_expenses').insert({ user_id: currentUser.id, amount, description: document.getElementById('exp-desc').value.trim() || null });
+  document.getElementById('dialog-expense').close();
+  await loadGrocery();
+}
+
+// ---------------------------------------------------------
+// CHAT COM O COACH DE IA
+// ---------------------------------------------------------
+async function openChatDialog(){
+  document.getElementById('dialog-chat').showModal();
+  await loadChatHistory();
+}
+async function loadChatHistory(){
+  const { data } = await db.from('chat_messages').select('*').eq('user_id', currentUser.id).order('created_at', { ascending:true }).limit(30);
+  renderChatMessages(data || []);
+}
+function renderChatMessages(messages){
+  const container = document.getElementById('chat-messages');
+  if(!messages.length){ container.innerHTML = '<div class="empty-hint on-card">Pergunte algo pro seu coach!</div>'; return; }
+  container.innerHTML = messages.map(m => `<div style="margin-bottom:10px;text-align:${m.role==='user'?'right':'left'}">
+    <span style="display:inline-block;max-width:80%;padding:9px 13px;border-radius:14px;font-size:0.85rem;text-align:left;
+    background:${m.role==='user'?'var(--accent)':'#F0F2F1'};color:${m.role==='user'?'#082014':'var(--card-ink)'}">${m.content}</span></div>`).join('');
+  container.scrollTop = container.scrollHeight;
+}
+async function sendChatMessage(){
+  const input = document.getElementById('chat-input');
+  const message = input.value.trim();
+  if(!message) return;
+  input.value = ''; input.disabled = true;
+  const container = document.getElementById('chat-messages');
+  container.innerHTML += `<div style="margin-bottom:10px;text-align:right"><span style="display:inline-block;max-width:80%;padding:9px 13px;border-radius:14px;font-size:0.85rem;background:var(--accent);color:#082014">${message}</span></div>`;
+  container.innerHTML += `<div id="chat-typing" style="font-size:0.78rem;color:var(--card-ink-soft)">Coach digitando…</div>`;
+  container.scrollTop = container.scrollHeight;
+
+  const { error } = await db.functions.invoke('chat-coach', { body: { message } });
+  document.getElementById('chat-typing')?.remove();
+  input.disabled = false;
+  if(error){ showToast('Erro no chat: ' + error.message); return; }
+  await loadChatHistory();
+}
+
+// ---------------------------------------------------------
+// SCANNERS EXTRAS (geladeira, cardápio de restaurante, exame)
+// ---------------------------------------------------------
+function triggerVisionScan(type){
+  document.getElementById('dialog-more-scanners').close();
+  pendingScanType = type;
+  document.getElementById('vision-scan-input').click();
+}
+
+async function handleVisionScanSelected(evt){
+  const file = evt.target.files[0];
+  evt.target.value = '';
+  if(!file || !pendingScanType) return;
+  const type = pendingScanType;
+  pendingScanType = null;
+
+  const { data: scanRow, error: insertError } = await db.from('vision_scans')
+    .insert({ user_id: currentUser.id, scan_type: type, status: 'processing' }).select().single();
+  if(insertError){ showToast('Erro: ' + insertError.message); return; }
+  openScanResultDialog(scanRow);
+
+  const path = `${currentUser.id}/${type}/${scanRow.id}.jpg`;
+  const { error: uploadError } = await db.storage.from('vision-scans').upload(path, file, { upsert: true });
+  if(uploadError){
+    await db.from('vision_scans').update({ status:'error', error_message:'Falha no upload da foto.' }).eq('id', scanRow.id);
+    openScanResultDialog({ ...scanRow, status:'error', error_message:'Falha no upload da foto.' });
+    return;
+  }
+  await db.from('vision_scans').update({ image_path: path }).eq('id', scanRow.id);
+
+  const fnName = { fridge:'scan-fridge', menu:'scan-menu', exam:'scan-exam' }[type];
+  const { error: fnError } = await db.functions.invoke(fnName, { body: { scanId: scanRow.id, path } });
+  if(fnError){
+    await db.from('vision_scans').update({ status:'error', error_message:'Falha ao acionar a análise por IA.' }).eq('id', scanRow.id);
+  }
+}
+
+function subscribeVisionScansRealtime(){
+  visionScanRealtimeChannel = db.channel('vision-scans-changes')
+    .on('postgres_changes', { event:'*', schema:'public', table:'vision_scans', filter:`user_id=eq.${currentUser.id}` },
+      (payload) => { if(payload.new && payload.new.id === openScanId) openScanResultDialog(payload.new); })
+    .subscribe();
+}
+
+const SCAN_TITLES = { fridge:'Sugestões da geladeira', menu:'Melhores escolhas do cardápio', exam:'Valores do exame' };
+
+function openScanResultDialog(scan){
+  openScanId = scan.id;
+  document.getElementById('scan-result-title').textContent = SCAN_TITLES[scan.scan_type] || 'Resultado';
+  const body = document.getElementById('scan-result-body');
+  if(scan.status === 'processing'){ body.innerHTML = '<div class="empty-hint on-card">Analisando…</div>'; }
+  else if(scan.status === 'error'){ body.innerHTML = `<div class="empty-hint on-card">${scan.error_message || 'Erro na análise.'}</div>`; }
+  else { body.innerHTML = renderScanResult(scan.scan_type, scan.result); }
+  const dlg = document.getElementById('dialog-scan-result');
+  if(!dlg.open) dlg.showModal();
+}
+
+function renderScanResult(type, result){
+  if(!result) return '<div class="empty-hint on-card">Sem resultado.</div>';
+  if(type === 'fridge'){
+    return `<p style="font-size:0.85rem;color:var(--card-ink-soft)">Identificado: ${(result.ingredientsSpotted||[]).join(', ') || '—'}</p>` +
+      (result.recipes||[]).map(r => `<div class="card" style="margin-top:10px;padding:14px"><h3 style="margin:0 0 6px;font-size:0.95rem">${r.recipeName}</h3>
+      <p style="font-size:0.82rem;line-height:1.5">${r.instructions}</p>
+      ${r.estimatedCalories ? `<span class="pill done">~${r.estimatedCalories} kcal</span>` : ''}</div>`).join('');
+  }
+  if(type === 'menu'){
+    return `<p style="font-size:0.85rem;margin-bottom:10px"><strong>Melhor escolha:</strong> ${result.topPick || '—'}</p>` +
+      (result.items||[]).map(i => `<div class="list-item"><div class="meta"><span class="name">${i.itemName}${i.recommended?' ⭐':''}</span>
+      <span class="sub">${i.healthNote||''}</span></div>${i.estimatedCalories?`<span class="pill">${i.estimatedCalories} kcal</span>`:''}</div>`).join('');
+  }
+  if(type === 'exam'){
+    return (result.values||[]).map(v => `<div class="list-item"><div class="meta"><span class="name">${v.testName}</span>
+      <span class="sub">Referência: ${v.referenceRange || '—'}</span></div><span class="pill">${v.value}${v.unit?' '+v.unit:''}</span></div>`).join('') +
+      `<p style="font-size:0.76rem;color:var(--card-ink-soft);margin-top:12px">${result.disclaimer || ''}</p>`;
+  }
+  return '';
+}
+
+// ---------------------------------------------------------
+// PREMIUM (Mercado Pago)
+// ---------------------------------------------------------
+function openPremiumDialog(){
+  renderPremiumDialog();
+  document.getElementById('dialog-premium').showModal();
+}
+
+function isPremiumActiveNow(){
+  return !!(currentProfile.is_premium && currentProfile.premium_expires_at && new Date(currentProfile.premium_expires_at) > new Date());
+}
+
+function renderPremiumDialog(){
+  const body = document.getElementById('premium-dialog-body');
+  if(isPremiumActiveNow()){
+    body.innerHTML = `
+      <p style="font-size:0.88rem;line-height:1.5">Sua assinatura está <strong style="color:var(--accent-dark)">ativa</strong> até
+      ${new Date(currentProfile.premium_expires_at).toLocaleDateString('pt-BR')}.</p>
+      <button class="btn btn-card-outline btn-block" style="margin-top:12px" onclick="cancelPremiumSubscription()">Cancelar assinatura</button>
+    `;
+  } else {
+    const status = currentProfile.mp_subscription_status;
+    body.innerHTML = `
+      <p style="font-size:0.88rem;line-height:1.5">Nutricionista IA, gêmeo digital e treinos ilimitados por <strong>R$ 29,90/mês</strong>.</p>
+      ${status && status !== 'cancelled' ? `<p style="font-size:0.78rem;color:var(--card-ink-soft)">Status atual: ${status}</p>` : ''}
+      <button class="btn btn-primary btn-block" style="margin-top:12px" onclick="startPremiumCheckout()">Assinar Premium</button>
+      ${currentProfile.mp_preapproval_id ? `<button class="btn-ghost btn-block" style="margin-top:8px" onclick="refreshPremiumStatus()">Já paguei, atualizar status</button>` : ''}
+    `;
+  }
+}
+
+async function startPremiumCheckout(){
+  const body = document.getElementById('premium-dialog-body');
+  body.innerHTML = '<div class="empty-hint on-card">Preparando checkout…</div>';
+  const { data, error } = await db.functions.invoke('create-subscription');
+  if(error || !data?.init_point){
+    showToast('Erro ao iniciar assinatura: ' + (error?.message || 'tente novamente'));
+    renderPremiumDialog();
+    return;
+  }
+  window.open(data.init_point, '_blank');
+  currentProfile.mp_preapproval_id = 'pending'; // só pra já mostrar o botão de "já paguei" abaixo
+  renderPremiumDialog();
+}
+
+async function refreshPremiumStatus(){
+  const body = document.getElementById('premium-dialog-body');
+  body.innerHTML = '<div class="empty-hint on-card">Verificando pagamento…</div>';
+  const { data, error } = await db.functions.invoke('manage-subscription', { body: { action: 'refresh' } });
+  if(error){ showToast('Erro ao verificar: ' + error.message); renderPremiumDialog(); return; }
+  const { data: profile } = await db.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+  currentProfile = profile || currentProfile;
+  applyProfileToHeader();
+  renderPremiumDialog();
+  if(data?.is_premium) showToast('Premium ativado! 🎉');
+}
+
+async function cancelPremiumSubscription(){
+  if(!confirm('Cancelar sua assinatura Premium?')) return;
+  const { error } = await db.functions.invoke('manage-subscription', { body: { action: 'cancel' } });
+  if(error){ showToast('Erro ao cancelar: ' + error.message); return; }
+  const { data: profile } = await db.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+  currentProfile = profile || currentProfile;
+  applyProfileToHeader();
+  renderPremiumDialog();
+  showToast('Assinatura cancelada.');
+}
+
+// ---------------------------------------------------------
+// MEU NUTRICIONISTA (Programa de Nutricionistas Parceiros)
+// ---------------------------------------------------------
+function openAcceptInviteDialog(){
+  document.getElementById('invite-code-input').value = '';
+  document.getElementById('dialog-accept-invite').showModal();
+}
+async function submitAcceptInvite(){
+  const code = document.getElementById('invite-code-input').value.trim();
+  if(!code){ showToast('Digite o código do convite.'); return; }
+  const { error } = await db.rpc('accept_invite', { p_code: code });
+  document.getElementById('dialog-accept-invite').close();
+  if(error){ showToast('Convite inválido: ' + error.message); return; }
+  showToast('Vinculado com sucesso!');
+  await loadNutritionistPanel();
+}
+
+async function loadNutritionistPanel(){
+  const { data: link } = await db.from('nutritionist_clients').select('*').eq('client_id', currentUser.id).eq('status', 'active').maybeSingle();
+  const container = document.getElementById('nutritionist-panel-content');
+
+  if(!link){
+    container.innerHTML = `
+      <div class="empty-hint">Você ainda não tem um nutricionista vinculado.</div>
+      <button class="btn btn-primary btn-block" style="margin-top:14px" onclick="openAcceptInviteDialog()">Tenho um código de convite</button>
+    `;
+    return;
+  }
+
+  const [{ data: nutriProfile }, { data: consultations }, { data: assessments }, { data: goals }, { data: recs }] = await Promise.all([
+    db.from('profiles').select('display_name').eq('id', link.nutritionist_id).maybeSingle(),
+    db.from('consultations').select('*').eq('client_id', currentUser.id).eq('nutritionist_id', link.nutritionist_id).eq('status', 'completed').order('consultation_date', { ascending:false }),
+    db.from('nutritional_assessments').select('*').eq('client_id', currentUser.id).order('created_at', { ascending:false }),
+    db.from('goals').select('*').eq('client_id', currentUser.id).eq('nutritionist_id', link.nutritionist_id).order('created_at', { ascending:false }),
+    db.from('recommendations').select('*').eq('client_id', currentUser.id).eq('nutritionist_id', link.nutritionist_id).eq('is_current', true).order('created_at', { ascending:false }),
+  ]);
+
+  const lastConsult = (consultations||[])[0];
+  const nextConsult = (consultations||[]).map(c=>c.next_consultation_date).filter(Boolean).sort()[0];
+  const currentGoals = (goals||[]).filter(g => g.status === 'pending' || g.status === 'in_progress');
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-title">👩‍⚕️ Meu Nutricionista</div>
+      <p style="font-size:0.95rem;font-weight:700">${nutriProfile?.display_name || 'Nutricionista'}</p>
+      <p style="font-size:0.78rem;color:var(--card-ink-soft)">Acompanhamento desde ${new Date(link.linked_at).toLocaleDateString('pt-BR')}</p>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card"><div class="head">ÚLTIMA CONSULTA</div><div class="val" style="font-size:1rem">${lastConsult ? new Date(lastConsult.consultation_date).toLocaleDateString('pt-BR') : '—'}</div></div>
+      <div class="stat-card"><div class="head">PRÓXIMA CONSULTA</div><div class="val" style="font-size:1rem">${nextConsult ? new Date(nextConsult).toLocaleDateString('pt-BR') : '—'}</div></div>
+    </div>
+
+    <div class="section-title">Minhas metas</div>
+    <div class="card" style="padding-top:6px">${currentGoals.length ? currentGoals.map(g => `
+      <div class="list-item"><div class="meta"><span class="name">${g.objective}</span><span class="sub">${g.target||''}${g.deadline?' · prazo '+new Date(g.deadline).toLocaleDateString('pt-BR'):''}</span></div></div>`).join('')
+      : '<div class="empty-hint on-card">Nenhuma meta registrada ainda.</div>'}</div>
+
+    <div class="section-title">Minhas orientações</div>
+    <div class="card" style="padding-top:6px">${(recs||[]).length ? recs.map(r => `
+      <div class="list-item"><div class="meta"><span class="name">${recCategoryLabelClient(r.category)}</span><span class="sub">${r.content}</span></div></div>`).join('')
+      : '<div class="empty-hint on-card">Nenhuma orientação atual.</div>'}</div>
+
+    <div class="section-title">Minhas consultas</div>
+    <div class="card" style="padding-top:6px">${(consultations||[]).length ? consultations.map(c => `
+      <div class="list-item"><div class="meta"><span class="name">${new Date(c.consultation_date).toLocaleDateString('pt-BR')}</span><span class="sub">${c.notes || 'Sem observações'}</span></div></div>`).join('')
+      : '<div class="empty-hint on-card">Nenhuma consulta registrada ainda.</div>'}</div>
+  `;
+}
+function recCategoryLabelClient(c){ return { alimentar:'Alimentar', habitos:'Hábitos', hidratacao:'Hidratação', rotina:'Rotina', estrategia:'Estratégia', observacoes:'Observações' }[c] || c; }
+</script>
 </body>
 </html>
